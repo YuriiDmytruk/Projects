@@ -32,4 +32,4 @@ while check < N:
     y = rand(a, b)
     z = GCD(x, y)
     print("GCD",x,",",y,"=",z)
-    check += 1
+    check += 12

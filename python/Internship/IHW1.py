@@ -25,9 +25,13 @@ def options(n):
     num_of_one_fields = (n - 1) * 2
     options_number += num_of_one_fields
     return options_number + 3
-
-
-N = int(input("N = "))
+stop = 0
+while stop == 0:
+    N = int(input("N = "))
+    if N >= 2 and N <= 12:
+        stop = 1
+    else :
+        print ("N має бути 2 <= N <= 12")
 x = options(N)
 
 print(x)

@@ -13,8 +13,23 @@ def GCD(a, b):
     x = a + b
     return x
 
+def result_print(N):
+    check = 0
+    while check < N:
+        x = rand(a, b)
+        y = rand(a, b)
+        z = GCD(x, y)
+        print("GCD", x, ",", y, "=", z)
+        check += 1
+
 print("Веведіть кількість ПАР чисел:")
-N = int(input("N = "))
+stop = 0
+while stop == 0:
+    N = int(input("N = "))
+    if N > 0:
+        stop = 1
+    else :
+        print ("N має бути > 0")
 
 check = 0
 print("Введіть межі a і b")
@@ -26,10 +41,4 @@ while check == 0:
     else:
         print("b має бути більше за a!")
 
-check = 0
-while check < N:
-    x = rand(a, b)
-    y = rand(a, b)
-    z = GCD(x, y)
-    print("GCD",x,",",y,"=",z)
-    check += 12
+result_print(N)

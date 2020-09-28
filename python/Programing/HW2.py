@@ -22,13 +22,40 @@ def move(array, a):
 
 
 def array_slide(arr, k):
-    check = 0
-    while check < k:
-        if arr[check] < 0:
-            move(arr, check)
-        check += 1
-    print("Масив із зміщенними відємними членами на k позицій вправо")
+    z = 0
+    num_minus_elem = 0
+    while z < len(arr):
+        if arr[z] < 0:
+            num_minus_elem += 1
+        z += 1
+
+    y = 1
+    stop = 0
+    while stop < k:
+        check = len(arr) - 1
+        x = num_minus_elem - 1
+        while x > 0:
+            if arr[check] < 0 and arr[check - y] < 0:
+                swap(arr, check, check - y)
+                y = 1
+                check -= 1
+                x -= 1
+
+            elif arr[check] < 0 and arr[check - y] > 0:
+                y += 1
+
+            elif arr[check] > 0 and arr[check - y] < 0:
+                y = 1
+                check -= 1
+
+            elif arr[check] > 0 and arr[check - y] > 0:
+                y += 1
+                check -= 1
+
+        stop += 1
+    print("Масив із зміщеними на k позицій відємними числами масиву")
     print(arr)
+    return arr
 
 
 def array_revers(arr):
@@ -65,6 +92,7 @@ def array_revers(arr):
         stop -= 1
     print("Масив із записаними в реверсному порядку додатніми числами")
     print(arr)
+    return arr
 
 check = 0
 print("Введіть межі a і b")

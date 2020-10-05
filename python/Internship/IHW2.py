@@ -72,22 +72,10 @@ def bubble_sort(arr):
     print(cal)
 
 
-def main(arr, find):
-    global calculate
-    calculate = 0
-    print("Кількість опрацій сортування бульбашкою:")
-    bubble_sort(arr)
-    print("Кількість опрацій швидким сортуванням:")
-    quick_sort(arr)
-    print(calculate)
-
-    print("Посортований масив")
-    print(arr)
-
-    operations = 0
+def binary_search(arr, find, middle, operations):
     right = len(arr) - 1
     left = 0
-    middle = right - ((right - left)//2)
+    middle = right - ((right - left) // 2)
     check = 1
     if find == arr[0]:
         middle = 0
@@ -103,7 +91,22 @@ def main(arr, find):
                 check = 0
             if right - left == 1:
                 check = 0
+    return middle, operations
 
+
+def main(arr, find):
+    global calculate
+    calculate = 0
+    print("Кількість опрацій сортування бульбашкою:")
+    bubble_sort(arr)
+    print("Кількість опрацій швидким сортуванням:")
+    quick_sort(arr)
+    print(calculate)
+    print("Посортований масив")
+    print(arr)
+    middle = 0
+    operations = 0
+    middle, operations = binary_search(arr, find, middle, operations)
     if arr[middle] == find:
         print("Позиція шуканого елемента:", middle)
         print("Кількість оперецій для його виявлення:", operations)

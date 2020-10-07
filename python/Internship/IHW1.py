@@ -1,16 +1,13 @@
 def options(n):
-    N = n
     options_number = 0
-    num_of_field = 0
-
     z = n - 1
-    stop = 0
+    x = 0
     num_of_field = 0
-    while stop < z:
-        num_of_field += n + stop
-        stop += 1
+    while x < z:
+        num_of_field += n + x
+        x += 1
     num_of_field *= 2
-    num_of_field += n + stop
+    num_of_field += n + x
 
     num_of_extreme_fields = (n - 2) * 6 + 6
     num_of_normal_fields = num_of_field - num_of_extreme_fields
@@ -25,14 +22,16 @@ def options(n):
     num_of_one_fields = (n - 1) * 2
     options_number += num_of_one_fields
     return options_number + 3
+
+
 stop = 0
 while stop == 0:
     N = int(input("N = "))
     if N >= 2 and N <= 12:
         stop = 1
-    else :
-        print ("N має бути 2 <= N <= 12")
-x = options(N)
+    else:
+        print("N має бути 2 <= N <= 12")
+options = options(N)
 
-print(x)
+print(options)
 

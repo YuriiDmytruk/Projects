@@ -45,6 +45,59 @@ class LinkedList:
         node1.data_val = node2.data_val
         node2.data_val = new_node.data_val
 
+    def create_random_list(self):
+        check = 0
+        print("Введіть межі a і b")
+        while check == 0:
+            a = int(input("a = "))
+            b = int(input("b = "))
+            if a < b:
+                check = 1
+            else:
+                print("b має бути більше за a!")
+        check = 0
+        while check == 0:
+            n = int(input("N = "))
+            if n > 0:
+                check = 1
+            else:
+                print("N має бути > 0")
+        n = 4
+        a = -9
+        b = 9
+        check = 0
+        while check <= n:
+            x = rand(a, b)
+            if x != 0:
+                self.add_to_end(x)
+                check += 1
+        print("Початковий масив")
+        return self
+
+    def num_element(self, x):
+        num_elem = 0
+        if x < 0:
+            help_node = self.head_val
+            while help_node is not None:
+                if self.return_date(help_node) < 0:
+                    num_elem += 1
+                help_node = help_node.next_val
+        else:
+            help_node = self.head_val
+            while help_node is not None:
+                if self.return_date(help_node) > 0:
+                    num_elem += 1
+                help_node = help_node.next_val
+        return num_elem
+
+    def return_len(self):
+        len = 0
+        end_val = self.head_val
+        while end_val.next_val:
+            end_val = end_val.next_val
+            len += 1
+        return len
+
 
 def rand(a, b):
     x = random.randint(a, b)
@@ -57,34 +110,6 @@ def info(l_list, x, y, val1, val2):
     print("Change: ", val2)
     print("Y: ", y)
     print("X: ", x)
-
-
-def create_random_linked_list(l_list):
-    check = 0
-    print("Введіть межі a і b")
-    while check == 0:
-        a = int(input("a = "))
-        b = int(input("b = "))
-        if a < b:
-            check = 1
-        else:
-            print("b має бути більше за a!")
-    check = 0
-    while check == 0:
-        n = int(input("N = "))
-        if n > 0:
-            check = 1
-        else:
-            print("N має бути > 0")
-    check = 0
-    while check <= n:
-        x = rand(a, b)
-        if x != 0:
-            l_list.add_to_end(x)
-            check += 1
-    print("Початковий масив")
-
-    return l_list
 
 
 def num_element_counter(l_list, x):
@@ -104,71 +129,66 @@ def num_element_counter(l_list, x):
     return num_elem
 
 
-def move_minus(l_list, key):
-    num_minus_elem = num_element_counter(l_list, -1)
+def move_elements(l_list, x, key):
+    num_elem = l_list.num_element(x)
     stop = 0
-    while stop < key:
-        x = num_minus_elem - 1
+    if x > 0:
+        key = num_elem - 1
+    while key > stop:
+        check = num_elem - 1
         last = l_list.return_end_val()
         prev = last.prev_val
-        while x > 0:
-
+        while check > 0:
             if l_list.return_date(last) < 0 and l_list.return_date(prev) < 0:
-                l_list.swap_list(last, prev)
-                last = last.prev_val
-                if prev.prev_val is not None:
-                    prev = last.prev_val
-                x -= 1
+                if x < 0:
+                    l_list.swap_list(last, prev)
+                    last = last.prev_val
+                    if prev.prev_val is not None:
+                        prev = last.prev_val
+                    check -= 1
+                elif x > 0:
+                    last = last.prev_val
+                    if prev.prev_val is not None:
+                        prev = prev.prev_val
             elif l_list.return_date(last) < 0 and l_list.return_date(prev) > 0:
-                prev = prev.prev_val
+                if x < 0:
+                    prev = prev.prev_val
+                elif x > 0:
+                    last = last.prev_val
+                    if prev.prev_val is not None:
+                        prev = prev.prev_val
             elif l_list.return_date(last) > 0 and l_list.return_date(prev) < 0:
-                last = last.prev_val
-                if prev.prev_val is not None:
-                    prev = last.prev_val
+                if x < 0:
+                    last = last.prev_val
+                    if prev.prev_val is not None:
+                        prev = last.prev_val
+                elif x > 0:
+                    if prev.prev_val is not None:
+                        prev = prev.prev_val
             elif l_list.return_date(last) > 0 and l_list.return_date(prev) > 0:
-                last = last.prev_val
-                if prev.prev_val is not None:
-                    prev = prev.prev_val
-        stop += 1
-    linked_list.list_print()
-    return l_list
-
-
-def move_plus(l_list):
-    num_plus_elem = num_element_counter(l_list, 1)
-    stop = num_plus_elem - 1
-    while stop > 0:
-        x = num_plus_elem - 1
-        last = l_list.return_end_val()
-        prev = last.prev_val
-
-        while x > 0:
-            if l_list.return_date(last) > 0 and l_list.return_date(prev) > 0:
-                l_list.swap_list(last, prev)
-                last = last.prev_val
-                if prev.prev_val is not None:
-                    prev = last.prev_val
-                x -= 1
-            elif l_list.return_date(last) > 0 and l_list.return_date(prev) < 0:
-                if prev.prev_val is not None:
-                    prev = prev.prev_val
-            elif l_list.return_date(last) < 0 and l_list.return_date(prev) > 0:
-                last = last.prev_val
-                if prev.prev_val is not None:
-                    prev = prev.prev_val
-            elif l_list.return_date(last) < 0 and l_list.return_date(prev) < 0:
-                last = last.prev_val
-                if prev.prev_val is not None:
-                    prev = prev.prev_val
-        num_plus_elem -= 1
-        stop -= 1
-    linked_list.list_print()
+                if x < 0:
+                    last = last.prev_val
+                    if prev.prev_val is not None:
+                        prev = prev.prev_val
+                elif x > 0:
+                    l_list.swap_list(last, prev)
+                    last = last.prev_val
+                    if prev.prev_val is not None:
+                        prev = last.prev_val
+                    check -= 1
+        if x > 0:
+            key -= 1
+            num_elem -= 1
+        elif x < 0:
+            stop += 1
     return l_list
 
 
 linked_list = LinkedList()
-create_random_linked_list(linked_list)
+linked_list.create_random_list()
 check = 0
+k = 0
+
 while check == 0:
     k = int(input("K = "))
     if k > 0:
@@ -176,6 +196,8 @@ while check == 0:
     else:
         print("N має бути > 0")
 linked_list.list_print()
-move_minus(linked_list, k)
-move_plus(linked_list)
+move_elements(linked_list, -1, k)
+linked_list.list_print()
+move_elements(linked_list, 1, k)
+linked_list.list_print()
 

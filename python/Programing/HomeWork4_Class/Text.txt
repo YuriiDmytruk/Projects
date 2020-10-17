@@ -1,6 +1,6 @@
-321;Frames;Bob;+380(67)808-06-77;12000;124000;www.Frames.com;
 413;Developments;David;+380(66)645-23-76;12414;135665;www.Developments.com;
-114;Inspections;Charly;+380(54)124-77-84;8646;862479;www.Inspections.com;
 822;Entertainment;Carl;+380(23)124-94-94;12342;32653;www.Entertainment.com;
-242;Workers;Ann;+256(28)734-69-23;345234;67457;www.Workers.com;
+321;Frames;Bob;+380(67)808-06-77;12000;124000;www.Frames.com;
+114;Inspections;Charly;+380(54)124-77-84;8646;862479;www.Inspections.com;
 912;Management;Tom;+380(43)343-98-23;62345;23451;www.Management.com;
+242;Workers;Ann;+256(28)734-69-23;345234;67457;www.Workers.com;

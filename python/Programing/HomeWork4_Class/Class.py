@@ -125,12 +125,12 @@ def validate(master, main_word, main_key):
     def to_url(word):
         word_arr = list(word)
         y = 0
-        if word_arr[0] + word_arr[1] + word_arr[2] + word_arr[3] != "www.":
+        if word_arr[0] + word_arr[1] + word_arr[2] != "www":
             word = "www."
             word += arr_to_word(word_arr)
             y = 1
-        if word_arr[len(word_arr) - 4] + word_arr[len(word_arr) - 3] + word_arr[len(word_arr) - 2] +\
-           word_arr[len(word_arr) - 1] != ".com":
+        if word_arr[len(word_arr) - 3] + word_arr[len(word_arr) - 2] +\
+           word_arr[len(word_arr) - 1] != "com":
             if y == 1:
                 word += ".com"
             else:

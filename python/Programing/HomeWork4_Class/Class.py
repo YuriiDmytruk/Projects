@@ -11,27 +11,17 @@ class Department:
 
     def print_elem(self):
         check = 0
-        while check < 7:
+        while check < Department.number_of_fields(self):
             print(Department.get_value(self, check), end='; ')
             check += 1
 
     def get_value(self, key):
-        if key == 0:
-            return self.id
-        elif key == 1:
-            return self.title
-        elif key == 2:
-            return self.director_name
-        elif key == 3:
-            return self.phone_number
-        elif key == 4:
-            return self.monthly_budget
-        elif key == 5:
-            return self.yearly_budget
-        elif key == 6:
-            return self.website_url
-        else:
-            print("Invalid key")
+        number = 0
+        for attribute, value in self.__dict__.items():
+            if number == key:
+                return value
+            else:
+                number += 1
 
     def add_value(self, value, key):
         if value == "":
@@ -56,10 +46,16 @@ class Department:
     def create_new_elem(self, arr_add):
         validate(arr_add, 0, 0)
         check = 0
-        while check < 7:
+        while check < Department.number_of_fields(self):
             Department.add_value(self, arr_add[check], check)
             check += 1
         return self
+
+    def number_of_fields(self):
+        fields = 0
+        for attribute, value in self.__dict__.items():
+            fields += 1
+        return fields
 
 
 def validate(master, main_word, main_key):

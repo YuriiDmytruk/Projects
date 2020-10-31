@@ -1,5 +1,6 @@
 import Class
 import utils
+import Validator
 import os.path
 
 class Node:
@@ -67,7 +68,10 @@ class LinkedList:
         while print_val is not None:
             stop = 0
             while stop < Class.Department.number_of_fields(print_val.data_val):
-                file.write(Class.Department.get_value(print_val.data_val, stop))
+                if Class.Department.get_value(print_val.data_val, stop) is not None:
+                    file.write(Class.Department.get_value(print_val.data_val, stop))
+                else:
+                    file.write("None")
                 file.write(";")
                 stop += 1
             print_val = print_val.next_val
@@ -97,6 +101,14 @@ class LinkedList:
         self.add_to_end(x)
         return self
 
+    def remove_last(self):
+        temp = self.head_val
+        prev = temp
+        while temp.next_val is not None:
+            prev = temp
+            temp = temp.next_val
+        prev.next_val = None
+
     def delete_element(self, key):
         help_node = self.head_val
         x = 0
@@ -107,20 +119,24 @@ class LinkedList:
                 x = 1
                 Class.Department.print_elem(help_node.data_val)
                 print()
-                help_node.data_val = help_node.next_val.data_val
-                help_node.next_val = help_node.next_val.next_val
+                if help_node.next_val is not None:
+                    help_node.data_val = help_node.next_val.data_val
+                    help_node.next_val = help_node.next_val.next_val
+                else:
+                    LinkedList.remove_last(self)
             help_node = help_node.next_val
         if x == 0:
             print("No elements with this Id")
+        print()
 
     def change_element(self, i_d, key, value):
         x = 1
         help_node = self.head_val
         while help_node is not None:
             if i_d == Class.Department.get_value(help_node.data_val, 0):
-                print("+")
                 x = 0
-                print(value, key)
+                element = Validator.Validate(value)
+                value = Validator.Validate.check_invalid_symbols(element)
                 Class.Department.add_value(help_node.data_val, value, key)
                 Class.Department.print_elem(help_node.data_val)
                 print()
@@ -139,6 +155,7 @@ class LinkedList:
         while help_node is not None:
             class_elem = 0
             while class_elem < Class.Department.number_of_fields(help_node):
+
                 checked_word = list(Class.Department.get_value(help_node.data_val, class_elem))
                 letter_word = 0
                 if len(checked_word) == len(find_arr):
@@ -156,10 +173,10 @@ class LinkedList:
                             else:
                                 x = 0
                             letter_find += 1
-                        if x == 1:
-                            Class.Department.print_elem(help_node.data_val)
-                            y = 1
-                            print()
+                            if x == 1:
+                                Class.Department.print_elem(help_node.data_val)
+                                y = 1
+                                print()
                         letter_word += 1
                 class_elem += 1
             help_node = help_node.next_val
@@ -219,8 +236,8 @@ def text_check():
 
 def text_start():
     global file_name
-    name = text_check()
-    file_name = name
+    #name = text_check()
+    file_name = "Text.txt"
 
 
 

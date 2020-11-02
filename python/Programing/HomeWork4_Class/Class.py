@@ -27,22 +27,14 @@ class Department:
     def add_value(self, value, key):
         if value == "":
             value = "None"
-        if key == 0:
-            self.id = value
-        elif key == 1:
-            self.title = value
-        elif key == 2:
-            self.director_name = value
-        elif key == 3:
-            self.phone_number = value
-        elif key == 4:
-            self.monthly_budget = value
-        elif key == 5:
-            self.yearly_budget = value
-        elif key == 6:
-            self.website_url = value
-        else:
-            print("Invalid key")
+        number = 0
+        for attribute in self.__dict__.items():
+            if number == key:
+                name = str(attribute)
+                name = get_name(name)
+                self.__dict__[name] = value
+            else:
+                number += 1
 
     def create_new_elem(self, arr_add):
         validate_list_add(arr_add)
@@ -66,3 +58,23 @@ def validate_list_add(arr_add):
         arr_add[check] = add_value
         check += 1
     return arr_add
+
+
+def get_name(name):
+    ret_name = ""
+    check = 0
+    x = 0
+    while check < len(name):
+        if name[check] == "'":
+            x += 1
+            check += 1
+        if x == 1:
+            ret_name += name[check]
+            check += 1
+        elif x == 2:
+            break
+        else:
+            check += 1
+    return ret_name
+
+

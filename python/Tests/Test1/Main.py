@@ -1,5 +1,5 @@
 import List
-import Class
+
 
 def menu_start():
     master_list = List.LinkedList()
@@ -59,7 +59,6 @@ def menu5(master_list):
     List.LinkedList.search_element(master_list, find)
 
 
-
 def menu6(master_list):
     print("Sort by:")
     print("ID - 0; Title - 1; DirectorName - 2; PhoneNumber - 3; MonthlyBudget - 4;"
@@ -104,5 +103,4 @@ def menu():
 
 List.text_start()
 menu()
-x = Class.Date(2, 2, 2)
-Class.Date.print_elem(x)
+

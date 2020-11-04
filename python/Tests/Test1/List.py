@@ -17,15 +17,8 @@ class LinkedList:
     def list_print(self):
         print_val = self.head_val
         while print_val is not None:
-            if inspect.isclass(Class.Date):
-                print(print_val.data_val)
-                Class.Date.print_elem(print_val.data_val)
-                print("+", end='')
-            else:
-                Class.Library.print_elem(print_val.data_val)
-            print()
+            Class.Library.print_element(print_val.data_val)
             print_val = print_val.next_val
-
 
     def read_from_file(self):
         file = open(file_name, "r")
@@ -51,9 +44,9 @@ class LinkedList:
             arr_main[check][3] = y
             check += 1
         check = 0
+
         while check < len(arr_main):
             elem_add = Class.Library()
-            print("check", check)
             Class.Library.create_new_elem(elem_add, arr_main[check])
             self.add_to_end(elem_add)
             check += 1

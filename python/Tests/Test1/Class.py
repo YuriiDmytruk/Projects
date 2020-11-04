@@ -1,4 +1,4 @@
-import inspect
+import Validator
 
 
 class Library:
@@ -10,10 +10,13 @@ class Library:
         self.user_name = user_name
 
     def create_new_elem(self, arr_add):
+        validate_list_add(arr_add)
+        is_date_correct(arr_add)
         check = 0
         while check < Library.number_of_fields(self):
             Library.add_value(self, arr_add[check], check)
             check += 1
+
         return self
 
     def add_value(self, value, key):
@@ -43,16 +46,17 @@ class Library:
             else:
                 number += 1
 
-    def print_elem(self):
-        check = 0
-        while check < Library.number_of_fields(self):
-            if inspect.isclass(Date):
-
+    def print_element(self):
+        x = 0
+        for attribute, value in self.__dict__.items():
+            name = str(attribute)
+            if name == "start_rent_date" or name == "end_rent_date":
+                Date.print_element(value)
+                print("; ", end='')
             else:
-                print(Library.get_value(self, check), end='; ')
-            check += 1
-
-
+                print(value, end='; ')
+            x += 1
+        print()
 
 
 class Date:
@@ -74,10 +78,12 @@ class Date:
             check += 1
         arr_add.append(element)
         check = 0
+        validate_list_add(arr_add)
         while check < Date.number_of_fields(self):
             Date.add_value(self, arr_add[check], check)
             check += 1
-        return self
+        x = Date.validate(self)
+        return x
 
     def add_value(self, value, key):
         if value == "":
@@ -105,19 +111,32 @@ class Date:
             else:
                 number += 1
 
-    def print_elem(self):
-        check = 0
-        word = ""
-        x = 1
-        while check < Date.number_of_fields(self):
-            if x > 2:
-                word += Date.get_value(self, check)
-            else:
-                word += Date.get_value(self, check)
-                word += "-"
-            check += 1
+    def print_element(self):
+        x = 0
+        for attribute, value in self.__dict__.items():
+            print(value, end='')
+            if x != 2:
+                print('-', end="")
             x += 1
-        return word
+
+    def validate(self):
+        x = Validator.Validate(Date.get_value(self, 0))
+        a = Validator.Validate.day_validation(x, Date.get_value(self, 1), Date.get_value(self, 1))
+        x = Validator.Validate(Date.get_value(self, 1))
+        b = Validator.Validate.month_validation(x)
+        x = Validator.Validate(Date.get_value(self, 2))
+        c = Validator.Validate.year_validation(x)
+        if a is None or b is None or c is None:
+            Date.full_none(self)
+            return self
+        else:
+            return self
+
+    def full_none(self):
+        self.day = None
+        self.month = None
+        self.year = None
+        return self
 
 def get_name(name):
     ret_name = ""
@@ -135,3 +154,40 @@ def get_name(name):
         else:
             check += 1
     return ret_name
+
+
+def validate_list_add(arr_add):
+    check = 0
+    while check < len(arr_add):
+        element = Validator.Validate(arr_add[check])
+        add_value = Validator.Validate.check_invalid_symbols(element)
+        arr_add[check] = add_value
+        check += 1
+    return arr_add
+
+
+def is_date_correct(arr):
+    x = arr[2]
+    y = arr[3]
+    if int(Date.get_value(x, 2)) > int(Date.get_value(y, 2)):
+        special(x, y, arr)
+        return arr
+    else:
+        if int(Date.get_value(x, 1)) > int(Date.get_value(y, 1)) and Date.get_value(x, 2) == Date.get_value(y, 2):
+            special(x, y, arr)
+            return arr
+        else:
+            if int(Date.get_value(x, 0)) > int(Date.get_value(y, 0)) and Date.get_value(x, 2) == Date.get_value(y, 2)\
+                    and Date.get_value(x, 1) == Date.get_value(y, 1):
+                special(x, y, arr)
+                return arr
+            else:
+                return arr
+
+
+def special(x, y, arr):
+    Date.full_none(x)
+    Date.full_none(y)
+    arr[2] = x
+    arr[3] = y
+    return arr

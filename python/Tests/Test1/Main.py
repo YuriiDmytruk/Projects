@@ -1,9 +1,11 @@
 import List
+import Class
 
 
 def menu_start():
     master_list = List.LinkedList()
     List.LinkedList.read_from_file(master_list)
+    List.LinkedList.check_date(master_list)
     print("If you want to ... click:")
     print("1 - Print file")
     print("2 - Add element")
@@ -103,4 +105,6 @@ def menu():
 
 List.text_start()
 menu()
+x = Class.Date("12", "2", "2000")
+print(Class.Date.get_full_value(x))
 

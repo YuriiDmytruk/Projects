@@ -10,6 +10,12 @@ class Library:
         self.user_name = user_name
 
     def create_new_elem(self, arr_add):
+        x = Date()
+        x = Date.create_new_elem(x, arr_add[2])
+        arr_add[2] = x
+        y = Date()
+        y = Date.create_new_elem(y, arr_add[3])
+        arr_add[3] = y
         validate_list_add(arr_add)
         is_date_correct(arr_add)
         check = 0
@@ -58,6 +64,18 @@ class Library:
             x += 1
         print()
 
+    def compare_date(self, check):
+        check_date_arr = []
+        help_date_arr = []
+        for attribute, value in self.__dict__.items():
+            name = str(attribute)
+            if name == "start_rent_date" or name == "end_rent_date":
+                help_date_arr.append(value)
+        for attribute, value in check.__dict__.items():
+            name = str(attribute)
+            if name == "start_rent_date" or name == "end_rent_date":
+                check_date_arr.append(value)
+        compare_date(help_date_arr, check_date_arr)
 
 class Date:
     def __init__(self, day=None, month=None, year=None):
@@ -137,6 +155,17 @@ class Date:
         self.month = None
         self.year = None
         return self
+
+    def full_value(self):
+        if self.day is None or self.month is None or self.year is None:
+            Date.full_none(self)
+        word = self.day
+        word += "-"
+        word += self.month
+        word += "-"
+        word += self.year
+        return word
+
 
 def get_name(name):
     ret_name = ""

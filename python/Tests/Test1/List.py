@@ -1,7 +1,5 @@
 import Class
-import Validator
 import os.path
-import inspect
 
 
 class Node:
@@ -36,16 +34,6 @@ class LinkedList:
         file.close()
         check = 0
         while check < len(arr_main):
-            x = Class.Date()
-            x = Class.Date.create_new_elem(x, arr_main[check][2])
-            arr_main[check][2] = x
-            y = Class.Date()
-            y = Class.Date.create_new_elem(y, arr_main[check][3])
-            arr_main[check][3] = y
-            check += 1
-        check = 0
-
-        while check < len(arr_main):
             elem_add = Class.Library()
             Class.Library.create_new_elem(elem_add, arr_main[check])
             self.add_to_end(elem_add)
@@ -76,13 +64,21 @@ class LinkedList:
         file = open(file_name, "w")
         print_val = self.head_val
         while print_val is not None:
+            x = 0
             stop = 0
-            while stop < Class.Department.number_of_fields(print_val.data_val):
-                if Class.Department.get_value(print_val.data_val, stop) is not None:
-                    file.write(Class.Department.get_value(print_val.data_val, stop))
+            while stop < Class.Library.number_of_fields(print_val.data_val):
+                if Class.Library.get_value(print_val.data_val, stop) is not None:
+                    if str(type(Class.Library.get_value(print_val.data_val, stop)).__name__) == "Date":
+                        file.write(Class.Date.full_value(Class.Library.get_value(print_val.data_val, stop)))
+                    else:
+                        if Class.Library.get_value(print_val.data_val) is not None:
+                            file.write(Class.Library.get_value(print_val.data_val, stop))
+                        else:
+                            file.write("None")
                 else:
                     file.write("None")
                 file.write(";")
+                x += 1
                 stop += 1
             print_val = print_val.next_val
             file.write("\n")
@@ -97,8 +93,8 @@ class LinkedList:
         return self
 
     def add_new_element(self):
-        write_arr = ["ID =", "Title =", "DirectorName =", "PhoneNumber =", "MonthlyBudget =",
-                     "YearlyBudget =", "WebsiteUrl ="]
+        """
+        write_arr = ["Title =", "Rent price =", "Start rent date =", "End rent date =", "User name ="]
         new_arr = []
         check = 0
         while check < len(write_arr):
@@ -106,8 +102,10 @@ class LinkedList:
             x = input()
             new_arr.append(x)
             check += 1
-        x = Class.Department()
-        Class.Department.create_new_elem(x, new_arr)
+        """
+        new_arr = ["Title1", "12,56", "12-5-2001", "23-4-2007", "Chak"]
+        x = Class.Library()
+        Class.Library.create_new_elem(x, new_arr)
         self.add_to_end(x)
         return self
 
@@ -119,8 +117,14 @@ class LinkedList:
             temp = temp.next_val
         prev.next_val = None
 
-
-
+    def check_date(self):
+        help_node = self.head_val
+        while help_node is not None:
+            check_node = help_node.next_val
+            while check_node is not None:
+                Class.Library.compare_date(help_node.data_val, check_node.data_val)
+                check_node = check_node.next_val
+            help_node = help_node.next_val
 
 
 def text_check():

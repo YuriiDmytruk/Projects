@@ -6,7 +6,6 @@ class Validate:
         allowed_symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+()-."
         word_arr = list(self.valid)
         allowed_arr = list(allowed_symbols)
-
         letter = 0
         while letter < len(word_arr):
             x = 0

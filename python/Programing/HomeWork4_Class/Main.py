@@ -9,7 +9,7 @@ def menu_start():
     print("1 - Print file")
     print("2 - Add element")
     print("3 - Delete element by id")
-    print("3 - Change element")
+    print("4 - Change element")
     print("5 - Search")
     print("6 - Sort")
     choose = input()
@@ -58,7 +58,6 @@ def menu5(master_list):
     print("Input phrase to search:", end=' ')
     find = input()
     list.LinkedList.search_element(master_list, find)
-
 
 
 def menu6(master_list):

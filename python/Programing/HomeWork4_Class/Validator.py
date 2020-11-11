@@ -19,4 +19,3 @@ class Validate:
                 return None
             letter += 1
         return self.valid
-

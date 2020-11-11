@@ -3,6 +3,7 @@ import utils
 import Validator
 import os.path
 
+
 class Node:
     def __init__(self, data_val=None):
         self.data_val = data_val
@@ -138,6 +139,7 @@ class LinkedList:
                 element = Validator.Validate(value)
                 value = Validator.Validate.check_invalid_symbols(element)
                 Class.Department.add_value(help_node.data_val, value, key)
+                print("Changed element:")
                 Class.Department.print_elem(help_node.data_val)
                 print()
                 print()
@@ -148,39 +150,59 @@ class LinkedList:
         return self
 
     def search_element(self, find):
-        find_arr = list(find)
-        x = 0
-        y = 0
-        help_node = self.head_val
-        while help_node is not None:
-            class_elem = 0
-            while class_elem < Class.Department.number_of_fields(help_node):
-
-                checked_word = list(Class.Department.get_value(help_node.data_val, class_elem))
-                letter_word = 0
-                if len(checked_word) == len(find_arr):
-                    if checked_word == find_arr:
-                        Class.Department.print_elem(help_node.data_val)
-                        y = 1
-                        print()
-                if len(checked_word) > len(find_arr):
-                    while letter_word < len(checked_word) - len(find_arr):
-                        x = 1
-                        letter_find = 0
-                        while letter_find < len(find_arr) and x == 1:
-                            if checked_word[letter_word + letter_find] == find_arr[letter_find]:
-                                x = 1
-                            else:
-                                x = 0
-                            letter_find += 1
-                            if x == 1:
-                                Class.Department.print_elem(help_node.data_val)
-                                y = 1
-                                print()
-                        letter_word += 1
-                class_elem += 1
-            help_node = help_node.next_val
-        if y == 0:
+        find_arr = []
+        main = self.head_val
+        find_len = len(find)
+        while main is not None:
+            atributes = 0
+            while atributes < Class.Department.number_of_fields(main.data_val):
+                word = Class.Department.get_value(main.data_val, atributes)
+                if word is not None:
+                    word_len = len(word)
+                    if word_len == find_len:
+                        if word == find:
+                            find_arr.append(main.data_val)
+                    elif find_len < word_len:
+                        check = 0
+                        while check + find_len - 1 < word_len:
+                            word_arr = list(word)
+                            lil_word_arr = []
+                            stop = check
+                            x = 0
+                            while x < find_len:
+                                lil_word_arr.append(word_arr[stop])
+                                x += 1
+                                stop += 1
+                            stop = 0
+                            lil_word = ""
+                            while stop < len(lil_word_arr):
+                                lil_word += lil_word_arr[stop]
+                                stop += 1
+                            if lil_word == find:
+                                find_arr.append(main.data_val)
+                            check += 1
+                atributes += 1
+            main = main.next_val
+        if len(find_arr) > 0:
+            check = 0
+            while check < len(find_arr):
+                stop = 0
+                while stop < len(find_arr) - check:
+                    print(stop, check)
+                    if Class.Department.get_value(find_arr[check], 0) == Class.Department.get_value(find_arr[stop], 0)\
+                            and stop != check:
+                        find_arr.pop(stop)
+                        check = 0
+                        stop = 0
+                    else:
+                        stop += 1
+                check += 1
+            check = 0
+            while check < len(find_arr):
+                Class.Department.print_elem(find_arr[check])
+                print()
+                check += 1
+        else:
             print("Nothing was found")
 
     def list_move_end(self, key):
@@ -238,6 +260,3 @@ def text_start():
     global file_name
     #name = text_check()
     file_name = "Text.txt"
-
-
-

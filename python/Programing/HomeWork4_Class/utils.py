@@ -22,4 +22,3 @@ def to_lover(word):
     else:
         word = "None"
         return word
-

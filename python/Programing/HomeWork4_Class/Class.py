@@ -1,4 +1,6 @@
 import Validator
+
+
 class Department:
     def __init__(self, id=None, title=None, director_name=None, phone_number=None, monthly_budget=None,
                  yearly_budget=None, website_url=None):
@@ -31,13 +33,19 @@ class Department:
         for attribute in self.__dict__.items():
             if number == key:
                 name = str(attribute)
-                name = get_name(name)
+                name = Department.get_name(self, name)
                 self.__dict__[name] = value
+                break
             else:
                 number += 1
 
     def create_new_elem(self, arr_add):
-        validate_list_add(arr_add)
+        check = 0
+        while check < len(arr_add):
+            element = Validator.Validate(arr_add[check])
+            add_value = Validator.Validate.check_invalid_symbols(element)
+            arr_add[check] = add_value
+            check += 1
         check = 0
         while check < Department.number_of_fields(self):
             Department.add_value(self, arr_add[check], check)
@@ -50,31 +58,22 @@ class Department:
             fields += 1
         return fields
 
-def validate_list_add(arr_add):
-    check = 0
-    while check < len(arr_add):
-        element = Validator.Validate(arr_add[check])
-        add_value = Validator.Validate.check_invalid_symbols(element)
-        arr_add[check] = add_value
-        check += 1
-    return arr_add
+    def get_name(self, name):
+        ret_name = ""
+        check = 0
+        x = 0
+        while check < len(name):
+            if name[check] == "'":
+                x += 1
+                check += 1
+            if x == 1:
+                ret_name += name[check]
+                check += 1
+            elif x == 2:
+                break
+            else:
+                check += 1
+        return ret_name
 
-
-def get_name(name):
-    ret_name = ""
-    check = 0
-    x = 0
-    while check < len(name):
-        if name[check] == "'":
-            x += 1
-            check += 1
-        if x == 1:
-            ret_name += name[check]
-            check += 1
-        elif x == 2:
-            break
-        else:
-            check += 1
-    return ret_name
 
 

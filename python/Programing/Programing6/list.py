@@ -1,5 +1,7 @@
 import os.path
 import Class
+import momento
+
 
 class Node:
     def __init__(self, data_val=None):
@@ -65,7 +67,8 @@ class LinkedList:
         self.add_to_end(x)
         return self
 
-    def delete_element(self, key):
+    def delete_element(self, key, history):
+
         help_node = self.head_val
         x = 0
         while help_node is not None:
@@ -80,10 +83,12 @@ class LinkedList:
                     help_node.next_val = help_node.next_val.next_val
                 else:
                     LinkedList.remove_last(self)
+
             help_node = help_node.next_val
         if x == 0:
             print("No elements with this Id")
         print()
+        return self
 
     def remove_last(self):
         temp = self.head_val
@@ -118,13 +123,17 @@ class LinkedList:
             file.write("\n")
         file.close()
 
-    def save_state(self):
-        help_node = self.head_val
-        arr = []
-        while help_node is not None:
-            arr.append(help_node.data_val)
-            help_node = help_node.next_val
-        return Memento(arr)
+    def return_len(self):
+        len = 0
+        end_val = self.head_val
+        while end_val.next_val:
+            end_val = end_val.next_val
+            len += 1
+        print(len)
+
+    def save_state(self, history):
+        care = momento.ConcreteMemento(self)
+        momento.ConcreteMemento.save(care, history)
 
     def restore_state(self, memento):
         arr = []
@@ -142,46 +151,8 @@ class LinkedList:
             check += 1
         return new_list
 
-
-
-
-
-class Memento(object):
-    def __init__(self, list):
-        self.list = list
-
-    def get_list_head(self):
-
-        return self.list[0]
-
-    def get_list_body(self, key):
-        if key + 2 < len(self.list):
-            return self.list[key + 1], 0
-        else:
-            return self.list[key + 1], 1
-
-    def get(self):
-        print(self.list)
-
-class Caretaker(object):
-
-    def __init__(self):
-        self._memento = None
-
-    def get_memento(self):
-        return self._memento
-
-    def set_memento(self, memento):
-        self._memento = memento
-
 """
-    def return_len(self):
-        len = 0
-        end_val = self.head_val
-        while end_val.next_val:
-            end_val = end_val.next_val
-            len += 1
-        return len
+
 
     def renew_file(self):
         open(file_name, "w").close()

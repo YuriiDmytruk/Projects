@@ -1,6 +1,8 @@
 import list
+import momento
 
 def menu_start():
+    history = momento.Caretaker()
     master_list = list.LinkedList()
     list.LinkedList.read_from_file(master_list)
     print("If you want to ... click:")
@@ -11,7 +13,7 @@ def menu_start():
     #choose = input()
     choose = 4
     choose = str(choose)
-    return master_list, choose
+    return master_list, choose, history
 
 
 def menu1(master_list):
@@ -34,24 +36,21 @@ def menu3(master_list):
     list.LinkedList.save_changes(master_list)
 
 
-def menu4(master_list):
+def menu4(master_list, history):
     print("One Step Back")
-    caretaker = list.Caretaker()
-    list.LinkedList.list_print(master_list)
     print()
-    list.Caretaker.set_memento(caretaker, list.LinkedList.save_state(master_list))
-    list.LinkedList.delete_element(master_list, "123")
-    list.LinkedList.list_print(master_list)
+    list.LinkedList.save_state(master_list, history)
+    momento.Caretaker.show_history(history)
+    list.LinkedList.delete_element(master_list, "123", history)
+    list.LinkedList.save_state(master_list, history)
+    momento.Caretaker.show_history(history)
     print()
-    master_list = list.LinkedList.restore_state(master_list, list.Caretaker.get_memento(caretaker))
-    print()
-    list.LinkedList.list_print(master_list)
 
 
 def menu():
     check = '1'
     while check == '1':
-        master_list, choose = menu_start()
+        master_list, choose, history = menu_start()
         if choose == '1':
             menu1(master_list)
         elif choose == '2':
@@ -59,7 +58,7 @@ def menu():
         elif choose == '3':
             menu3(master_list)
         elif choose == '4':
-            menu4(master_list)
+            menu4(master_list, history)
         else:
             print("Invalid option")
         stop = 1
@@ -77,23 +76,3 @@ def menu():
 
 list.text_start()
 menu()
-
-
-
-"""
-originator = Class.Department()
-caretaker = Class.Caretaker()
-
-Class.Department.add_value(originator, '123', 0)
-print('Originator state:', Class.Department.get_value(originator, 0))
-
-Class.Caretaker.set_memento(caretaker, Class.Department.save_state(originator))
-Class.Department.add_value(originator, '432', 0)
-
-print('Originator change state:', Class.Department.get_value(originator, 0))
-Class.Department.restore_state(originator, Class.Caretaker.get_memento(caretaker))
-
-
-print('Originator restore state:', Class.Department.get_value(originator, 0))
-
-"""

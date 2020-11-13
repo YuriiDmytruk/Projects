@@ -2,7 +2,7 @@ import list
 import momento
 
 def menu_start():
-    history = momento.Caretaker()
+    history = momento.CareTaker()
     master_list = list.LinkedList()
     list.LinkedList.read_from_file(master_list)
     print("If you want to ... click:")
@@ -40,10 +40,22 @@ def menu4(master_list, history):
     print("One Step Back")
     print()
     list.LinkedList.save_state(master_list, history)
+    list.LinkedList.delete_element(master_list, "123", history)
+    list.LinkedList.save_state(master_list, history)
+    momento.CareTaker.show_history(history)
+
+
+
+    """
     momento.Caretaker.show_history(history)
+   
     list.LinkedList.delete_element(master_list, "123", history)
     list.LinkedList.save_state(master_list, history)
     momento.Caretaker.show_history(history)
+    list.LinkedList.delete_element(master_list, "645", history)
+    list.LinkedList.save_state(master_list, history)
+    momento.Caretaker.show_history(history)
+    """
     print()
 
 

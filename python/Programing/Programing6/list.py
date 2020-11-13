@@ -132,8 +132,17 @@ class LinkedList:
         print(len)
 
     def save_state(self, history):
-        care = momento.ConcreteMemento(self)
-        momento.ConcreteMemento.save(care, history)
+        new_list = LinkedList.copy_list(self)
+        new = momento.Momento_main(new_list)
+        momento.Momento_main.save(new, history)
+
+    def copy_list(self):
+        new = LinkedList()
+        node = self.head_val
+        while node is not None:
+            LinkedList.add_to_end(new, node.data_val)
+            node = node.next_val
+        return new
 
     def restore_state(self, memento):
         arr = []

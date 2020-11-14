@@ -1,5 +1,7 @@
-import os.path
 import Class
+import utils
+import Validator
+import os.path
 import momento
 
 
@@ -53,115 +55,13 @@ class LinkedList:
         end_val.next_val = new_node
         new_node.prev_val = end_val
 
-    def add_new_element(self):
-        write_arr = ["ID ="]
-        new_arr = []
-        check = 0
-        while check < len(write_arr):
-            print(write_arr[check], end=' ')
-            x = input()
-            new_arr.append(x)
-            check += 1
-        x = Class.Department()
-        Class.Department.create_new_elem(x, new_arr)
-        self.add_to_end(x)
-        return self
-
-    def delete_element(self, key, history):
-
-        help_node = self.head_val
-        x = 0
-        while help_node is not None:
-            if key == Class.Department.get_value(help_node.data_val, 0):
-                if x == 0:
-                    print("This element was deleted:")
-                x = 1
-                Class.Department.print_elem(help_node.data_val)
-                print()
-                if help_node.next_val is not None:
-                    help_node.data_val = help_node.next_val.data_val
-                    help_node.next_val = help_node.next_val.next_val
-                else:
-                    LinkedList.remove_last(self)
-
-            help_node = help_node.next_val
-        if x == 0:
-            print("No elements with this Id")
-        print()
-        return self
-
-    def remove_last(self):
-        temp = self.head_val
-        prev = temp
-        while temp.next_val is not None:
-            prev = temp
-            temp = temp.next_val
-        prev.next_val = None
-
-    def save_changes(self):
-        print("Save changes to file?")
-        print("Yes - 1; No - 0")
-        save = int(input())
-        if save == 1:
-            LinkedList.renew_file(self)
-        return self
-
-    def renew_file(self):
-        open(file_name, "w").close()
-        file = open(file_name, "w")
-        print_val = self.head_val
-        while print_val is not None:
-            stop = 0
-            while stop < Class.Department.number_of_fields(print_val.data_val):
-                if Class.Department.get_value(print_val.data_val, stop) is not None:
-                    file.write(Class.Department.get_value(print_val.data_val, stop))
-                else:
-                    file.write("None")
-                file.write(";")
-                stop += 1
-            print_val = print_val.next_val
-            file.write("\n")
-        file.close()
-
     def return_len(self):
         len = 0
         end_val = self.head_val
         while end_val.next_val:
             end_val = end_val.next_val
             len += 1
-        print(len)
-
-    def save_state(self, history):
-        new_list = LinkedList.copy_list(self)
-        new = momento.Momento_main(new_list)
-        momento.Momento_main.save(new, history)
-
-    def copy_list(self):
-        new = LinkedList()
-        node = self.head_val
-        while node is not None:
-            LinkedList.add_to_end(new, node.data_val)
-            node = node.next_val
-        return new
-
-    def restore_state(self, memento):
-        arr = []
-        arr.append(memento.get_list_head())
-        key = 0
-        check = 0
-        while key != 1:
-            x, key = memento.get_list_body(check)
-            arr.append(x)
-            check += 1
-        new_list = LinkedList()
-        check = 0
-        while check < len(arr):
-            LinkedList.add_to_end(new_list, arr[check])
-            check += 1
-        return new_list
-
-"""
-
+        return len
 
     def renew_file(self):
         open(file_name, "w").close()
@@ -240,6 +140,7 @@ class LinkedList:
                 element = Validator.Validate(value)
                 value = Validator.Validate.check_invalid_symbols(element)
                 Class.Department.add_value(help_node.data_val, value, key)
+                print("Changed element:")
                 Class.Department.print_elem(help_node.data_val)
                 print()
                 print()
@@ -250,39 +151,59 @@ class LinkedList:
         return self
 
     def search_element(self, find):
-        find_arr = list(find)
-        x = 0
-        y = 0
-        help_node = self.head_val
-        while help_node is not None:
-            class_elem = 0
-            while class_elem < Class.Department.number_of_fields(help_node):
-
-                checked_word = list(Class.Department.get_value(help_node.data_val, class_elem))
-                letter_word = 0
-                if len(checked_word) == len(find_arr):
-                    if checked_word == find_arr:
-                        Class.Department.print_elem(help_node.data_val)
-                        y = 1
-                        print()
-                if len(checked_word) > len(find_arr):
-                    while letter_word < len(checked_word) - len(find_arr):
-                        x = 1
-                        letter_find = 0
-                        while letter_find < len(find_arr) and x == 1:
-                            if checked_word[letter_word + letter_find] == find_arr[letter_find]:
-                                x = 1
-                            else:
-                                x = 0
-                            letter_find += 1
-                            if x == 1:
-                                Class.Department.print_elem(help_node.data_val)
-                                y = 1
-                                print()
-                        letter_word += 1
-                class_elem += 1
-            help_node = help_node.next_val
-        if y == 0:
+        find_arr = []
+        main = self.head_val
+        find_len = len(find)
+        while main is not None:
+            atributes = 0
+            while atributes < Class.Department.number_of_fields(main.data_val):
+                word = Class.Department.get_value(main.data_val, atributes)
+                if word is not None:
+                    word_len = len(word)
+                    if word_len == find_len:
+                        if word == find:
+                            find_arr.append(main.data_val)
+                    elif find_len < word_len:
+                        check = 0
+                        while check + find_len - 1 < word_len:
+                            word_arr = list(word)
+                            lil_word_arr = []
+                            stop = check
+                            x = 0
+                            while x < find_len:
+                                lil_word_arr.append(word_arr[stop])
+                                x += 1
+                                stop += 1
+                            stop = 0
+                            lil_word = ""
+                            while stop < len(lil_word_arr):
+                                lil_word += lil_word_arr[stop]
+                                stop += 1
+                            if lil_word == find:
+                                find_arr.append(main.data_val)
+                            check += 1
+                atributes += 1
+            main = main.next_val
+        if len(find_arr) > 0:
+            check = 0
+            while check < len(find_arr):
+                stop = 0
+                while stop < len(find_arr) - check:
+                    print(stop, check)
+                    if Class.Department.get_value(find_arr[check], 0) == Class.Department.get_value(find_arr[stop], 0)\
+                            and stop != check:
+                        find_arr.pop(stop)
+                        check = 0
+                        stop = 0
+                    else:
+                        stop += 1
+                check += 1
+            check = 0
+            while check < len(find_arr):
+                Class.Department.print_elem(find_arr[check])
+                print()
+                check += 1
+        else:
             print("Nothing was found")
 
     def list_move_end(self, key):
@@ -320,7 +241,33 @@ class LinkedList:
         else:
             print("Invalid key")
         return self
-"""
+
+    def save_state(self, history):
+        new_list = LinkedList.copy_list(self)
+        new = momento.Momento(new_list)
+        momento.Momento.save(new, history)
+
+    def copy_list(self):
+        new = LinkedList()
+        node = self.head_val
+        while node is not None:
+            LinkedList.add_to_end(new, node.data_val)
+            node = node.next_val
+        return new
+
+    def undo(self, history):
+        new = momento.CareTaker.undo(history)
+        if new is not None:
+            return new, 1
+        else:
+            return self, 0
+
+    def redo(self, history):
+        new = momento.CareTaker.redo(history)
+        if new is not None:
+            return new, 1
+        else:
+            return self, 0
 
 
 def text_check():

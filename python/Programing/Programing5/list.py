@@ -237,7 +237,7 @@ def text_check():
 def text_start():
     global file_name
     #name = text_check()
-    file_name = "Text.txt"
+    file_name = "TextB.txt"
 
 
 

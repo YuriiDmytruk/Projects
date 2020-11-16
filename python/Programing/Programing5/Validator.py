@@ -9,7 +9,7 @@ class Validate:
         for attribute in self.valid.__dict__.items():
             name = str(attribute)
             name = Class.Department.get_name(self.valid, name)
-            arr = Validate.ret_arr(self, name)
+            arr = ret_arr(name)
             Validate.controler(self, arr, name)
         return self.valid
 
@@ -18,20 +18,11 @@ class Validate:
         arr_check = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+()-."
         self.date = allowed_symbols(self.date, arr_check)
         if self.date is not None:
-            self.date = Validate.first_step(self)(allowed_symbols)(self.date)(arr)
+            self.date = allowed_symbols(self.date, arr)
         Class.Department.add_value_by_name(self.valid, self.date, name)
 
-    def first_step(self):
-        def outer(func):
-            def wrapper(word):
-                def last(arr):
-                    result = func(word, arr)
-                    return result
-                return last
-            return wrapper
-        return outer
 
-    def ret_arr(self, name):
+def ret_arr(name):
         if name == "id":
             result = "0123456789"
         elif name == "title" or name == "director_name":
@@ -47,6 +38,14 @@ class Validate:
         return result
 
 
+def first_step(func):
+    def outer(word, arr):
+        result = func(word, arr)
+        return result
+    return outer
+
+
+@first_step
 def allowed_symbols(word, arr):
     word_arr = list(word)
     allowed_arr = list(arr)

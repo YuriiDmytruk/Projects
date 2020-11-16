@@ -188,7 +188,6 @@ class LinkedList:
             while check < len(find_arr):
                 stop = 0
                 while stop < len(find_arr) - check:
-                    print(stop, check)
                     if Class.Department.get_value(find_arr[check], 0) == Class.Department.get_value(find_arr[stop], 0)\
                             and stop != check:
                         find_arr.pop(stop)

@@ -28,7 +28,16 @@ def menu1(master_list):
 
 def menu2(master_list, history):
     print("Create new element:")
-    list.LinkedList.add_new_element(master_list)
+    write_arr = ["ID =", "Title =", "DirectorName =", "PhoneNumber =", "MonthlyBudget =",
+                 "YearlyBudget =", "WebsiteUrl ="]
+    new_arr = []
+    check = 0
+    while check < len(write_arr):
+        print(write_arr[check], end=' ')
+        x = input()
+        new_arr.append(x)
+        check += 1
+    list.LinkedList.add_new_element(master_list, new_arr)
     list.LinkedList.list_print(master_list)
     list.LinkedList.save_changes(master_list)
     list.LinkedList.save_state(master_list, history)

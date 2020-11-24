@@ -20,7 +20,7 @@ class Validate:
         self.date = allowed_symbols(self.date, arr_check)
         if self.date is not None:
             self.date = allowed_symbols(self.date, arr)
-        Class.Department.add_value_by_name(self.valid, self.date, name)
+        Class.Department.set_value_by_name(self.valid, self.date, name)
 
 
 def ret_arr(name):
@@ -48,6 +48,7 @@ def first_step(func):
 
 @first_step
 def allowed_symbols(word, arr):
+    word = str(word)
     word_arr = list(word)
     allowed_arr = list(arr)
     letter = 0

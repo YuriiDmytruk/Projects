@@ -62,8 +62,11 @@ class CareTaker:
             return None
 
     def redo(self):
-        if self.iter != len(self.momentos) - 1:
-            self.iter += 1
-            return Momento.get(ConcreteMemento.get(self.momentos[self.iter]))
+        if len(self.momentos) > 0:
+            if self.iter != len(self.momentos) - 1:
+                self.iter += 1
+                return Momento.get(ConcreteMemento.get(self.momentos[self.iter]))
+            else:
+                return None
         else:
             return None

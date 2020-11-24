@@ -2,6 +2,7 @@ import Class
 import utils
 import Validator
 import os.path
+import momento
 
 
 class Node:
@@ -239,6 +240,33 @@ class LinkedList:
         else:
             print("Invalid key")
         return self
+
+    def save_state(self, history):
+        new_list = LinkedList.copy_list(self)
+        new = momento.Momento(new_list)
+        momento.Momento.save(new, history)
+
+    def copy_list(self):
+        new = LinkedList()
+        node = self.head_val
+        while node is not None:
+            LinkedList.add_to_end(new, node.data_val)
+            node = node.next_val
+        return new
+
+    def undo(self, history):
+        new = momento.CareTaker.undo(history)
+        if new is not None:
+            return new, 1
+        else:
+            return self, 0
+
+    def redo(self, history):
+        new = momento.CareTaker.redo(history)
+        if new is not None:
+            return new, 1
+        else:
+            return self, 0
 
 
 def text_check():

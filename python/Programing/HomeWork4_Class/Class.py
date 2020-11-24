@@ -41,16 +41,12 @@ class Department:
 
     def create_new_elem(self, arr_add):
         check = 0
-        while check < len(arr_add):
-            element = Validator.Validate(arr_add[check])
-            add_value = Validator.Validate.check_invalid_symbols(element)
-            arr_add[check] = add_value
-            check += 1
-        check = 0
         while check < Department.number_of_fields(self):
             Department.add_value(self, arr_add[check], check)
             check += 1
-        return self
+        x = Validator.Validate(self)
+        y = Validator.Validate.main_validation(x)
+        return y
 
     def number_of_fields(self):
         fields = 0
@@ -74,6 +70,24 @@ class Department:
             else:
                 check += 1
         return ret_name
+
+    def add_value_by_name(self, value, key):
+        if value == "":
+            value = "None"
+        number = 0
+        for attribute in self.__dict__.items():
+            name = str(attribute)
+            name = Department.get_name(self, name)
+            if name == key:
+                self.__dict__[key] = value
+                break
+            else:
+                number += 1
+
+    def get_value_by_name(self, key):
+        for attribute, value in self.__dict__.items():
+            if attribute == key:
+                return value
 
 
 

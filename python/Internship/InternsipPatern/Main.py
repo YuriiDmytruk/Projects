@@ -1,22 +1,22 @@
 import List
 import Strategy
 import Validator
+import Observer
 
 
 def check_strategy(func):
-    def wraper(main_list, context, full):
+    def wraper(main_list, context, full, observer):
         if context == 0:
             print("First you should choose strategy")
         elif full == 0:
             print("First you should choose option 3 too full list")
         else:
-            main_list = func(main_list)
-        return main_list
+            main_list, observer = func(main_list, observer)
+        return main_list, observer
     return wraper
 
 
 def start_menu():
-    Strategy.text_start()
     print("1 - Strategy 1 (Iterator)")
     print("2 - Strategy 2 (Read From File)")
     print("3 - Generation")
@@ -24,22 +24,26 @@ def start_menu():
     print("5 - Delete in Range")
     print("6 - Sort")
     print("7 - Print")
-    print("8 - Exit")
+    print("8 - Load Last Add")
+    print("9 - Load Last Remove")
+    print("10 - Exit")
     choose = input()
     return choose
 
 
-def menu3(main_list, context):
+def menu3(main_list, context, observer):
     if context != 0:
         print("Start Generation")
         Strategy.Context.full_list(context, main_list)
+        copy = List.LinkedList.copy_list(main_list)
+        Observer.Observer.notify(observer, "Add", copy)
     else:
         print("Choose Strategy")
-    return main_list
+    return main_list, observer
 
 
 @check_strategy
-def menu4(main_list):
+def menu4(main_list, observer):
     i_d = None
     while i_d is None:
         print("Input id:", end=" ")
@@ -51,11 +55,13 @@ def menu4(main_list):
         else:
             print("Value should be integer")
     main_list = List.LinkedList.delete_element(main_list, i_d)
-    return main_list
+    copy = List.LinkedList.copy_list(main_list)
+    Observer.Observer.notify(observer, "Remove", copy)
+    return main_list, observer
 
 
 @check_strategy
-def menu5(main_list):
+def menu5(main_list, observer):
     start = None
     stop = None
     check = 0
@@ -87,21 +93,73 @@ def menu5(main_list):
         else:
             print("Stop must be > start")
     main_list = List.LinkedList.delete_in_range(main_list, start, stop)
-    return main_list
+    copy = List.LinkedList.copy_list(main_list)
+    Observer.Observer.notify(observer, "Remove", copy)
+    return main_list, observer
 
 
 @check_strategy
-def menu6(main_list):
+def menu6(main_list, observer):
     List.LinkedList.sort(main_list)
-    return main_list
+    return main_list, observer
 
 
 def menu7(main_list):
     List.LinkedList.list_print(main_list)
 
 
+@check_strategy
+def menu8(main_list, observer):
+    history = Observer.Observer.return_add(observer)
+    if history is not None:
+        print("Last Add: ", end="")
+        List.LinkedList.list_print(history)
+        check = 0
+        while check == 0:
+            print("Confirm load: 1-Yes; 0-No")
+            choose = input()
+            if choose == "1":
+                main_list = history
+                check = 1
+            elif choose == "0":
+                check = 1
+            else:
+                print("Wrong key")
+    else:
+        print("No History Now")
+    return main_list, observer
+
+
+@check_strategy
+def menu9(main_list, observer):
+    history = Observer.Observer.return_remove(observer)
+    if history is not None:
+        print("Last Remove: ", end="")
+        List.LinkedList.list_print(history)
+        check = 0
+        while check == 0:
+            print("Confirm load: 1-Yes; 0-No")
+            choose = input()
+            if choose == "1":
+                main_list = history
+                check = 1
+            elif choose == "0":
+                check = 1
+            else:
+                print("Wrong key")
+    else:
+        print("No History Now")
+    return main_list, observer
+
+
 def main_menu():
+    Strategy.text_start()
     main_list = List.LinkedList()
+    observer = Observer.Observer()
+    add = Observer.EventAdd()
+    observer.attach(add)
+    remove = Observer.EventRemove()
+    observer.attach(remove)
     check = 1
     context = 0
     full = 0
@@ -114,16 +172,20 @@ def main_menu():
         elif choose == "3":
             if context != 0:
                 full = 1
-                menu3(main_list, context)
+                main_list, observer = menu3(main_list, context, observer)
         elif choose == "4":
-            menu4(main_list, context, full)
+            main_list, observer = menu4(main_list, context, full, observer)
         elif choose == "5":
-            menu5(main_list, context, full)
+            main_list, observer = menu5(main_list, context, full, observer)
         elif choose == "6":
-            menu6(main_list, context, full)
+            main_list = menu6(main_list, context, full, observer)
         elif choose == "7":
             menu7(main_list)
         elif choose == "8":
+            main_list, observer = menu8(main_list, context, full, observer)
+        elif choose == "9":
+            main_list, observer = menu9(main_list, context, full, observer)
+        elif choose == "10":
             check = 0
             print("Bye")
         else:

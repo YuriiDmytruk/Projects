@@ -2,6 +2,38 @@ import List
 import Strategy
 import Validator
 import Observer
+import threading
+
+
+def create_list():
+    list = List.LinkedList()
+    observer = Observer.Observer()
+    add = Observer.EventAdd()
+    observer.attach(add)
+    remove = Observer.EventRemove()
+    observer.attach(remove)
+    arr = []
+    arr.append(list)
+    arr.append(observer)
+    return arr
+
+
+def on_start():
+    Strategy.text_start()
+    check = 1
+    context = 0
+    full = 0
+    return check, context, full
+
+
+def delete(list, id, check):
+    print("Thread:", check, "Start")
+    if 0 < id < List.LinkedList.return_len(list):
+        List.LinkedList.delete_element(list, id)
+    else:
+        print("Element with this Id not exist")
+    print("Thread:", check, "End")
+    return list
 
 
 def check_strategy(func):
@@ -26,7 +58,11 @@ def start_menu():
     print("7 - Print")
     print("8 - Load Last Add")
     print("9 - Load Last Remove")
-    print("10 - Exit")
+    print("10 - Create new list")
+    print("11 - Set list")
+    print("12 - Delete by position in all lists")
+    print("13 - Print All")
+    print("14 - Exit")
     choose = input()
     return choose
 
@@ -54,7 +90,7 @@ def menu4(main_list, observer):
             i_d = int(i_d)
         else:
             print("Value should be integer")
-    main_list = List.LinkedList.delete_element(main_list, i_d)
+    List.LinkedList.delete_element(main_list, i_d)
     copy = List.LinkedList.copy_list(main_list)
     Observer.Observer.notify(observer, "Remove", copy)
     return main_list, observer
@@ -152,18 +188,61 @@ def menu9(main_list, observer):
     return main_list, observer
 
 
+def menu10(arr_list):
+    arr = create_list()
+    arr_list.append(arr)
+    return arr_list
+
+
+def menu11(arr_list, index):
+    print("Curent list : ", end=" ")
+    List.LinkedList.list_print(arr_list[index][0])
+    check = 0
+    print("Your Lists:")
+    while check < len(arr_list):
+        print(check, " : ", end=" ")
+        List.LinkedList.list_print(arr_list[check][0])
+        check += 1
+    print("Insert id:", end=" ")
+    index = input()
+    index = int(index)
+    return index
+
+
+def menu12(arr_list):
+    i_d = None
+    while i_d is None:
+        print("Input id:", end=" ")
+        i_d = input()
+        z = Validator.Validator(i_d)
+        z = Validator.Validator.check_number(z)
+        if z is not None and int(z) > 0:
+            i_d = int(i_d)
+        else:
+            print("Value should be integer")
+
+    check = 0
+    while check < len(arr_list):
+        threading.Thread(target=delete, args=[arr_list[check][0], i_d, check]).start()
+        check += 1
+    return arr_list
+
+
+def menu13(arr_list):
+    check = 0
+    while check < len(arr_list):
+        List.LinkedList.list_print(arr_list[check][0])
+        check += 1
+
+
 def main_menu():
-    Strategy.text_start()
-    main_list = List.LinkedList()
-    observer = Observer.Observer()
-    add = Observer.EventAdd()
-    observer.attach(add)
-    remove = Observer.EventRemove()
-    observer.attach(remove)
-    check = 1
-    context = 0
-    full = 0
+    check, context, full = on_start()
+    arr_list = []
+    arr_list.append(create_list())
+    list_index = 0
     while check == 1:
+        main_list = arr_list[list_index][0]
+        observer = arr_list[list_index][1]
         choose = start_menu()
         if choose == "1":
             context = Strategy.Context(Strategy.ConcreteStrategyA())
@@ -186,6 +265,18 @@ def main_menu():
         elif choose == "9":
             main_list, observer = menu9(main_list, context, full, observer)
         elif choose == "10":
+            arr_list = menu10(arr_list)
+        elif choose == "11":
+            arr_list[list_index][0] = main_list
+            arr_list[list_index][1] = observer
+            list_index = menu11(arr_list, list_index)
+            main_list = arr_list[list_index][0]
+            observer = arr_list[list_index][1]
+        elif choose == "12":
+            arr_list = menu12(arr_list)
+        elif choose == "13":
+            menu13(arr_list)
+        elif choose == "14":
             check = 0
             print("Bye")
         else:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
+from Iterator import Iterator
 import List
 import Validator
 import os.path
@@ -43,20 +44,27 @@ class ConcreteStrategyA(Strategy):
             else:
                 print("Value should be integer")
         check = 0
-        while check < number:
+        while check != 1:
             print("Input id:", end=" ")
             i_d = input()
-            print("Input value:", end=" ")
+            print("Input start value:", end=" ")
             value = input()
             print()
             x = Validator.Validator(i_d)
             Validator.Validator.check_number(x)
-            if x is not None:
+            y = Validator.Validator(value)
+            Validator.Validator.check_number(y)
+            if x is not None and y is not None:
                 i_d = int(i_d)
-                List.LinkedList.insert(my_list, i_d, value)
+                value = int(value)
+                iter = Iterator(value, number)
+                arr = Iterator.get_arr(iter)
+                check += 1
+                my_list = List.LinkedList.insert_arr(my_list, i_d, arr)
+                check = 1
             else:
                 print("Value should be integer")
-            check += 1
+                check = 0
         return my_list
 
 

@@ -74,22 +74,8 @@ class LinkedList:
                     half2.append(main_arr[check])
                     check += 1
                 main_arr = half1 + arr + half2
-            print(main_arr)
             LinkedList.arr_to_list(self, main_arr)
             return self
-
-    def insert(self, val, i_d):
-        arr = []
-        help_node = self.head_val
-        while help_node.next_val is not None:
-            arr.append(help_node.data_val)
-            help_node = help_node.next_val
-        if len(arr) == i_d:
-            arr.append(val)
-            i_d += 1
-        LinkedList.arr_to_list(self, arr)
-        print(arr)
-        return i_d
 
     def list_to_arr(self):
         arr = []

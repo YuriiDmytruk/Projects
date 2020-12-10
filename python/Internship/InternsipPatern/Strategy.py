@@ -67,26 +67,20 @@ class ConcreteStrategyB(Strategy):
 
     def set_list(self, my_list):
         arr = ConcreteStrategyB.read_from_file(self)
-        check = 0
-        while check < len(arr):
-            my_list = List.LinkedList.insert(my_list, int(arr[check][0]), arr[check][1])
-            check += 1
+        print("Input id:", end=" ")
+        i_d = input()
+        i_d = int(i_d)
+        my_list = List.LinkedList.insert_arr(my_list, i_d, arr)
         return my_list
 
     def read_from_file(self):
         arr_main = []
-        arr_add = [0, 0]
         file = open(file_name, "r")
         for line in file:
             word = ""
             for letter in line:
                 if letter == ';':
-                    arr_add[1] = word
-                    arr_main.append(arr_add)
-                    arr_add = [0, 0]
-                    word = ""
-                elif letter == ".":
-                    arr_add[0] = word
+                    arr_main.append(word)
                     word = ""
                 else:
                     word += letter

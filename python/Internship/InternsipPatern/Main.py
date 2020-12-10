@@ -4,7 +4,6 @@ import Validator
 import Observer
 import threading
 
-
 def create_list():
     list = List.LinkedList()
     observer = Observer.Observer()
@@ -26,10 +25,12 @@ def on_start():
     return check, context, full
 
 
-def delete(list, id, check):
+def delete(list, id, check, observer):
     print("Thread:", check, "Start")
     if 0 < id < List.LinkedList.return_len(list):
         List.LinkedList.delete_element(list, id)
+        copy = List.LinkedList.copy_list(list)
+        Observer.Observer.notify(observer, "Remove", copy)
     else:
         print("Element with this Id not exist")
     print("Thread:", check, "End")
@@ -43,8 +44,8 @@ def check_strategy(func):
         elif full == 0:
             print("First you should choose option 3 too full list")
         else:
-            main_list, observer = func(main_list, observer)
-        return main_list, observer
+            main_list = func(main_list, observer)
+        return main_list
     return wraper
 
 
@@ -56,8 +57,6 @@ def start_menu():
     print("5 - Delete in Range")
     print("6 - Sort")
     print("7 - Print")
-    print("8 - Load Last Add")
-    print("9 - Load Last Remove")
     print("10 - Create new list")
     print("11 - Set list")
     print("12 - Delete by position in all lists")
@@ -93,7 +92,7 @@ def menu4(main_list, observer):
     List.LinkedList.delete_element(main_list, i_d)
     copy = List.LinkedList.copy_list(main_list)
     Observer.Observer.notify(observer, "Remove", copy)
-    return main_list, observer
+    return main_list
 
 
 @check_strategy
@@ -131,7 +130,7 @@ def menu5(main_list, observer):
     main_list = List.LinkedList.delete_in_range(main_list, start, stop)
     copy = List.LinkedList.copy_list(main_list)
     Observer.Observer.notify(observer, "Remove", copy)
-    return main_list, observer
+    return main_list
 
 
 @check_strategy
@@ -142,50 +141,6 @@ def menu6(main_list, observer):
 
 def menu7(main_list):
     List.LinkedList.list_print(main_list)
-
-
-@check_strategy
-def menu8(main_list, observer):
-    history = Observer.Observer.return_add(observer)
-    if history is not None:
-        print("Last Add: ", end="")
-        List.LinkedList.list_print(history)
-        check = 0
-        while check == 0:
-            print("Confirm load: 1-Yes; 0-No")
-            choose = input()
-            if choose == "1":
-                main_list = history
-                check = 1
-            elif choose == "0":
-                check = 1
-            else:
-                print("Wrong key")
-    else:
-        print("No History Now")
-    return main_list, observer
-
-
-@check_strategy
-def menu9(main_list, observer):
-    history = Observer.Observer.return_remove(observer)
-    if history is not None:
-        print("Last Remove: ", end="")
-        List.LinkedList.list_print(history)
-        check = 0
-        while check == 0:
-            print("Confirm load: 1-Yes; 0-No")
-            choose = input()
-            if choose == "1":
-                main_list = history
-                check = 1
-            elif choose == "0":
-                check = 1
-            else:
-                print("Wrong key")
-    else:
-        print("No History Now")
-    return main_list, observer
 
 
 def menu10(arr_list):
@@ -223,7 +178,7 @@ def menu12(arr_list):
 
     check = 0
     while check < len(arr_list):
-        threading.Thread(target=delete, args=[arr_list[check][0], i_d, check]).start()
+        threading.Thread(target=delete, args=[arr_list[check][0], i_d, check, arr_list[check][1]]).start()
         check += 1
     return arr_list
 
@@ -251,19 +206,15 @@ def main_menu():
         elif choose == "3":
             if context != 0:
                 full = 1
-                main_list, observer = menu3(main_list, context, observer)
+                main_list = menu3(main_list, context, observer)
         elif choose == "4":
-            main_list, observer = menu4(main_list, context, full, observer)
+            main_list = menu4(main_list, context, full, observer)
         elif choose == "5":
-            main_list, observer = menu5(main_list, context, full, observer)
+            main_list = menu5(main_list, context, full, observer)
         elif choose == "6":
             main_list = menu6(main_list, context, full, observer)
         elif choose == "7":
             menu7(main_list)
-        elif choose == "8":
-            main_list, observer = menu8(main_list, context, full, observer)
-        elif choose == "9":
-            main_list, observer = menu9(main_list, context, full, observer)
         elif choose == "10":
             arr_list = menu10(arr_list)
         elif choose == "11":
@@ -279,6 +230,7 @@ def main_menu():
         elif choose == "14":
             check = 0
             print("Bye")
+            open("History.txt", "w").close()
         else:
             print("Wrong Key")
 

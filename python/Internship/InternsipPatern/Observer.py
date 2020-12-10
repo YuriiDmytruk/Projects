@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from typing import List
 import List
 
+
 class Subject(ABC):
 
     @abstractmethod
@@ -18,14 +19,6 @@ class Subject(ABC):
         pass
 
     @abstractmethod
-    def return_add(self):
-        pass
-
-    @abstractmethod
-    def return_remove(self):
-        pass
-
-    @abstractmethod
     def save_add(self):
         pass
 
@@ -37,8 +30,6 @@ class Subject(ABC):
 class Observer(Subject):
     _state: List = None
     _key: str = None
-    _lastAdd: List = None
-    _lastRemove: List = None
     _observers: List[Event] = []
 
     def attach(self, observer: Event) -> None:
@@ -53,18 +44,20 @@ class Observer(Subject):
         for observer in self._observers:
             observer.on_change(self)
 
-    def return_add(self) -> List:
-        return self._lastAdd
-
-    def return_remove(self) -> List:
-        return self._lastRemove
-
     def save_add(self) -> None:
-        self._lastAdd = self._state
+        file = open("History.txt", "a")
+        file.write("Add: ")
+        file.write(List.LinkedList.return_str_list(self._state))
+        file.write("\n")
+        file.close()
         return None
 
     def save_remove(self) -> None:
-        self._lastRemove = self._state
+        file = open("History.txt", "a")
+        file.write("Remove: ")
+        file.write(List.LinkedList.return_str_list(self._state))
+        file.write("\n")
+        file.close()
         return None
 
 

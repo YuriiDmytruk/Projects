@@ -18,6 +18,17 @@ class LinkedList:
             print_val = print_val.next_val
         print()
 
+    def return_str_list(self):
+        print_val = self.head_val
+        x = ""
+        while print_val is not None:
+            if print_val.data_val is not None:
+                x += str(print_val.data_val) + "; "
+            else:
+                x += "None, "
+            print_val = print_val.next_val
+        return x
+
     def add_to_end(self, new_data):
         if self is None:
             return None
@@ -35,33 +46,73 @@ class LinkedList:
             new_node.prev_val = end_val
             return self
 
-    def insert(self, i_d, value):
-        if i_d is None or value is None:
+    def insert_arr(self, i_d, arr):
+        if i_d is None or arr is None:
             print("None error")
         else:
-            if i_d > LinkedList.return_len(self):
-                LinkedList.create_none(self, i_d)
+            if LinkedList.return_len(self) < i_d:
+                LinkedList.create_none(self, i_d - 1)
+            main_arr = LinkedList.list_to_arr(self)
+            if len(main_arr) == i_d:
+                check = 0
+                while check < len(arr):
+                    main_arr.append(arr[check])
+                    check += 1
+                print(main_arr)
+            else:
+                check = 0
+                while check < len(arr):
+                    arr.append(None)
+                    check += 1
+            LinkedList.arr_to_list(self, main_arr)
+            return self
 
-            LinkedList.set_by_id(self, i_d, value)
+    def insert(self, val, i_d):
+        arr = []
+        help_node = self.head_val
+        while help_node.next_val is not None:
+            arr.append(help_node.data_val)
+            help_node = help_node.next_val
+        if len(arr) == i_d:
+            arr.append(val)
+            i_d += 1
+        LinkedList.arr_to_list(self, arr)
+        print(arr)
+        return i_d
+
+    def list_to_arr(self):
+        arr = []
+        help_node = self.head_val
+        while help_node is not None:
+            arr.append(help_node.data_val)
+            help_node = help_node.next_val
+        return arr
+
+    def arr_to_list(self, arr):
+        while LinkedList.return_len(self) > 0:
+            LinkedList.delete_element(self, LinkedList.return_len(self) - 1)
+        check = 0
+        while check < len(arr):
+            LinkedList.add_to_end(self, arr[check])
+            check += 1
+        return list
+
+    def remove_last(self):
+        if self is None:
+            return None
+        else:
+            temp = self.head_val
+            prev = temp
+            while temp.next_val is not None:
+                prev = temp
+                temp = temp.next_val
+            prev.next_val = None
             return self
 
     def create_none(self, i_d):
         while i_d > LinkedList.return_len(self):
             LinkedList.add_to_end(self, None)
         return self
-
-    def set_by_id(self, i_d, value):
-        if i_d == 0:
-            LinkedList.add_to_end(self, value)
-            return self
-        else:
-            help_node = self.head_val
-            check = 0
-            while check != i_d:
-                help_node = help_node.next_val
-                check += 1
-            help_node.data_val = value
-            return self
 
     def return_len(self):
         if self is None:
@@ -103,18 +154,6 @@ class LinkedList:
                 LinkedList.delete_element(self, start)
                 stop -= 1
         return self
-
-    def remove_last(self):
-        if self is None:
-            return None
-        else:
-            temp = self.head_val
-            prev = temp
-            while temp.next_val is not None:
-                prev = temp
-                temp = temp.next_val
-            prev.next_val = None
-            return self
 
     def sort(self):
         help_node = self.head_val

@@ -59,11 +59,22 @@ class LinkedList:
                     main_arr.append(arr[check])
                     check += 1
                 print(main_arr)
+            elif i_d == 0:
+                main_arr = arr + main_arr
+            elif len(main_arr) == 0:
+                main_arr = arr
             else:
+                half1 = []
+                half2 = []
                 check = 0
-                while check < len(arr):
-                    arr.append(None)
+                while check < i_d:
+                    half1.append(main_arr[check])
                     check += 1
+                while check < len(main_arr):
+                    half2.append(main_arr[check])
+                    check += 1
+                main_arr = half1 + arr + half2
+            print(main_arr)
             LinkedList.arr_to_list(self, main_arr)
             return self
 

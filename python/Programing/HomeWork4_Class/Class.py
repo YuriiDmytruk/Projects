@@ -2,6 +2,7 @@ import Validator
 
 
 class Department:
+
     def __init__(self, id=None, title=None, director_name=None, phone_number=None, monthly_budget=None,
                  yearly_budget=None, website_url=None):
         self.id = id
@@ -38,25 +39,6 @@ class Department:
                 else:
                     number += 1
 
-    def set_value(self, value, key):
-        if self is None or key is None:
-            return None
-        else:
-            if value == "":
-                value = "None"
-            number = 0
-            for attribute in self.__dict__.items():
-                if number == Department.number_of_fields(self) - 1:
-                    return None
-                else:
-                    if number == key:
-                        name = str(attribute)
-                        name = Department.get_name(self, name)
-                        self.__dict__[name] = value
-                        return self
-                    else:
-                        number += 1
-
     def create_new_elem(self, arr_add):
         if self is None or arr_add is None:
             return None
@@ -72,9 +54,7 @@ class Department:
                     arr_add[check] = "None"
                 Department.set_value(self, arr_add[check], check)
                 check += 1
-            x = Validator.Validate(self)
-            y = Validator.Validate.main_validation(x)
-            return y
+            return self
 
     def number_of_fields(self):
         if self is None:
@@ -102,6 +82,40 @@ class Department:
                 check += 1
         return ret_name
 
+    def validat(func):
+        def wraper(self, value, key):
+            if isinstance(key, int):
+                name_arr = ['id', 'title', 'director_name', 'phone_number', 'monthly_budget', 'yearly_budget', 'website_url']
+                key_name = name_arr[key]
+            else:
+                key_name = key
+            x = Validator.Validate(value, key_name)
+            value = Validator.Validate.main_validation(x)
+            value = func(self, value, key)
+            return value
+        return wraper
+
+    @validat
+    def set_value(self, value, key):
+        if self is None or key is None:
+            return None
+        else:
+            if value == "":
+                value = "None"
+            number = 0
+            for attribute in self.__dict__.items():
+                if number == Department.number_of_fields(self) - 1:
+                    return None
+                else:
+                    if number == key:
+                        name = str(attribute)
+                        name = Department.get_name(self, name)
+                        self.__dict__[name] = value
+                        return self
+                    else:
+                        number += 1
+
+    @validat
     def set_value_by_name(self, value, key):
         if key is None or self is None:
             return None
@@ -130,6 +144,10 @@ class Department:
                     else:
                         return value
         return None
+
+    validat = staticmethod(validat)
+
+
 
 
 

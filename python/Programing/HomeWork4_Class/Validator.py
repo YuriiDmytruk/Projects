@@ -1,26 +1,19 @@
-import Class
-
-
 class Validate:
-    def __init__(self, valid=None, date=None):
-        self.valid = valid
-        self.date = date
+    def __init__(self, value=None, key=None):
+        self.value = value
+        self.key = key
 
     def main_validation(self):
-        for attribute in self.valid.__dict__.items():
-            name = str(attribute)
-            name = Class.Department.get_name(self.valid, name)
-            arr = ret_arr(name)
-            Validate.controler(self, arr, name)
-        return self.valid
+        arr = ret_arr(self.key)
+        self.value = Validate.controler(self, arr)
+        return self.value
 
-    def controler(self, arr, name):
-        self.date = Class.Department.get_value_by_name(self.valid, name)
+    def controler(self, arr):
         arr_check = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890+()-."
-        self.date = allowed_symbols(self.date, arr_check)
-        if self.date is not None:
-            self.date = allowed_symbols(self.date, arr)
-        Class.Department.set_value_by_name(self.valid, self.date, name)
+        self.value = allowed_symbols(self.value, arr_check)
+        if self.value is not None:
+            self.value = allowed_symbols(self.value, arr)
+        return self.value
 
 
 def ret_arr(name):

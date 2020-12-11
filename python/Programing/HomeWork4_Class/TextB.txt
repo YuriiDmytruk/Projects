@@ -1,0 +1,5 @@
+114;None;Ann;+380(87)457-14-87;345234;67457;None;
+None;Frames;Bob;None;12000;124000.00;None;
+822;None;Carl;+380(23)124-99-94;None;None;None;
+115;None;None;None;8646;862479;None;
+413;None;David;None;12414;None;None;

@@ -5,12 +5,12 @@ from DataModel import Customer, db
 
 class UtilResource(Resource):
     def get(self):
-        name = "Name"
+        name = ["Yurii", "Roma", "Bob", "Tom", "Ann"]
         email = "Email"
         check = 0
-        while check < 5:
+        while check < len(name):
             new_post = Customer(
-                name=name,
+                name=name[check],
                 email=email
             )
             db.session.add(new_post)

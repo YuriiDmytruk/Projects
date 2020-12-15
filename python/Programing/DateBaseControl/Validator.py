@@ -1,17 +1,14 @@
 class Validate:
-    def __init__(self, name=None, email=None):
+    def __init__(self, name=None, email=None, int=None):
         self.name = name
         self.email = email
+        self.int = int
 
     def main_valid(self):
-        if self.name is not None and self.email is None:
-            self.name = Validate.valid_name(self)
-        elif self.name is None and self.email is not None:
-            self.email = Validate.valid_email(self)
-        else:
-            self.name = Validate.valid_name(self)
-            self.email = Validate.valid_email(self)
-        return self.name, self.email
+        self.name = Validate.valid_name(self)
+        self.email = Validate.valid_email(self)
+        self.int = Validate.valid_int(self)
+        return self.name, self.email, self.int
 
     def valid_name(self):
         if self.name is not None:
@@ -30,6 +27,15 @@ class Validate:
         else:
             return None
         return self.email
+
+    def valid_int(self):
+        if self.int is not None:
+            symbols = "1234567890"
+            x = allowed_symbols(self.int, symbols)
+            self.int = x
+        else:
+            return None
+        return self.int
 
 
 def allowed_symbols(word, allow_symbols):

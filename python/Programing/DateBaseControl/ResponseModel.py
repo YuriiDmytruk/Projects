@@ -5,10 +5,11 @@ ma = Marshmallow(app)
 
 
 class Response:
-    def __init__(self, status=None, message=None, customers=None):
+    def __init__(self, status=None, message=None, elements=None, count=None):
         self.status = status
         self.message = message
-        self.customers = customers
+        self.elements = elements
+        self.count = count
 
     def __repr__(self):
         return '<Result: %s>' % self.status
@@ -16,7 +17,7 @@ class Response:
 
 class Schema(ma.Schema):
     class Meta:
-        fields = ("status", "message", "customers")
+        fields = ("status", "message", "elements", "count")
 
 
 response_schema = Schema()

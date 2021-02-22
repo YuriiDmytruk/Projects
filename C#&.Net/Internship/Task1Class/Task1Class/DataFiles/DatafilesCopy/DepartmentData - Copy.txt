@@ -1,4 +1,6 @@
-114;Workers;Ann;+380(87)457-14-87;345234;67457;www.Workers.com;:
+ClassName;Task1Class.DepartmentDTO;
+property;id;title;director_name;phone_number;monthly_budget;yearly_budget;website_url;+
+165;Workers;Ann;+380(87)457-14-87;345234;67457;www.Workers.com;:
 115;Inspections;Charly;+380(54)124-77-84;8646;862479;www.Inspections.com;:
 321;Frames;Bob;+380(67)808-06-77;12000;12400000;www.Frames.com;:
 413;Developments;David;+380(66)645-23-76;12414;135665;www.Developments.com;:

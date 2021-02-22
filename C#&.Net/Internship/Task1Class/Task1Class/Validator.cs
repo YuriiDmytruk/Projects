@@ -1,109 +1,65 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace Task1Class
 {
-    class Validator
+    static class Validator
     {
-        public string value;
-        public string key;
-
-        public void Set(string new_value, string new_key)
+        public static string Validate(string value, string validateInfo)
         {
-            value = new_value;
-            key = new_key;
-        }
-
-        public Validator(string value, string key)
-        {
-            this.value = value;
-            this.key = key;
-        }
-
-        public char[] GetAllowSymbols()
-        {
-
-
-            string allow_str = "";
-
-
-            string numbers = "0123456789";
-            string letters = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM";
-            string url = letters + ".";
-            string phone = numbers + "()-+";
-            string all_allowed = url + phone;
-
-
-            switch (key)
+            if (value == "null" | value == null)
             {
-                case "all":
-                    allow_str = all_allowed;
-                    break;
-                case "numbers":
-                    allow_str = numbers;
-                    break;
-                case "url":
-                    allow_str = url;
-                    break;
-                case "phone":
-                    allow_str = phone;
-                    break;
-                case "letters":
-                    allow_str = letters;
-                    break;
-                default:
-                    Console.WriteLine("Unknown key");
-                    break;
+                return null;
             }
-
-            char[] allow_arr = new char[allow_str.Length];
-            allow_arr = allow_str.ToCharArray();
-            return allow_arr;
-        }
-
-        public string Validate()
-        {
-            string word = value;
-            char[] word_arr = new char[word.Length];
-            word_arr = word.ToCharArray();
-            char[] allow_symbols = GetAllowSymbols();
-            word_arr = DeleteNotAllowedSymbols(word_arr, allow_symbols);
-            word = CharArrToStr(word_arr);
-            return word;
-        }
-
-        public char[] DeleteNotAllowedSymbols(char[] word_arr, char[] symbols_arr)
-        {
-            List<char> help_list = new List<char>();
-            for (int word_iterator = 0; word_iterator < word_arr.Length; word_iterator++)
+            else
             {
-                for (int symbol_iterator = 0; symbol_iterator < symbols_arr.Length; symbol_iterator++)
+                if (!Regex.IsMatch(value, GetPatern(validateInfo)))
                 {
-                    if (word_arr[word_iterator] == symbols_arr[symbol_iterator])
-                    {
-                        help_list.Add(word_arr[word_iterator]);
-                    }
+                    value = null;
                 }
+                return value;
             }
-            char[] help_arr = new char[help_list.Count];
-            for (int i = 0; i < help_list.Count; i++)
-            {
-                help_arr[i] = help_list[i];
-            }
-            return help_arr;
         }
-
-        public string CharArrToStr(char[] arr)
+        public static bool ValidateAndInform(string value, string validateInfo)
         {
-            string word = "";
-            foreach(char x in arr)
+            if (value == "null" | value == null)
             {
-                word += x;
+                Console.WriteLine("The entered value has not been validated");
+                return false;
             }
-            return word;
+            else
+            {
+                if (!Regex.IsMatch(value, GetPatern(validateInfo)))
+                {
+                    Console.WriteLine("The entered value has not been validated");
+                    return false;
+                }
+                return true;
+            }
         }
-    } 
+        private static string GetPatern(string validateInfo)
+        {
+            string patern = validateInfo;
+            Dictionary<string, string> defaultPaterns = new Dictionary<string, string>
+        {
+            {"numbers", @"^[0-9]+$"},
+            {"letters", @"^[a-zA-Z]+$"},
+            //dd-mm-yyyy
+            {"date", @"(((0|1)[0-9]|2[0-9]|3[0-1])\-(0[1-9]|1[0-2])\-((19|20)\d\d))$"},
+            //www.*.com
+            {"url", @"www.[a-zA-Z0-9]+.com$"},
+            //+nnn(nn)nnn-nn-nn
+            {"phone", @"\+[0-9]{3}\([0-9]{2}\)[0-9]{3}\-[0-9]{2}\-[0-9]{2}"},
+            {"double", @"^[\+\-]?\d*\.?[Ee]?[\+\-]?\d*$"},
+            //*@*.*
+            {"email", @"[a-zA-Z0-9]+(@)[a-zA-Z]+(.)[a-zA-Z]+"}
+        };
+            if (!defaultPaterns.TryGetValue(validateInfo, out patern))
+            {
+                patern = validateInfo;
+            }
+            return patern;
+        }
+    }
 }

@@ -2,368 +2,254 @@
 using System.Collections.Generic;
 using System.IO;
 
+// Add wrong metaDate Exceptions
+
+
 namespace Task1Class
 {
     class Program
     {
-        static void End()
-        {
-            Console.WriteLine("Press any key to exit.");
-            System.Console.ReadKey();
-        }
-
         static void Main(string[] args)
         {
-            List<Department> dep_info_list = new List<Department>();
-            dep_info_list = ReadFromFile(dep_info_list);
-
-            Console.WriteLine("Information that was read from the file");
-            PrintAll(dep_info_list);
-
-            bool exit = false;
-            while (exit == false)
+            while (true)
             {
-                Console.WriteLine("0 - Exit\n" +
-                    "1 - Search\n" +
-                    "2 - Sort\n" +
-                    "3 - Delete\n" +
-                    "4 - Add\n" +
-                    "5 - Cheange\n" + 
-                    "6 - Print\n");
-                string choose = Console.ReadLine();
-                switch (choose)
+                List<string> files = Util.GetFiles(Directory.GetCurrentDirectory());
+                files.Insert(0, "Exit");
+                Console.WriteLine("Select a file:");
+                int fileID = Util.AskUserForChoice(Util.ToFileNamesOnly(files));
+
+                if (fileID == 0)
                 {
-                    case "0":
-                        exit = true;
-                        break;
-                    case "1":
-                        Search(dep_info_list);
-                        break;
-                    case "2":
-                        Sort(dep_info_list);
-                        break;
-                    case "3":
-                        Delete(dep_info_list);
-                        break;
-                    case "4":
-                        Add(dep_info_list);
-                        break;
-                    case "5":
-                        Cheange(dep_info_list);
-                        break;
-                    case "6":
-                        PrintAll(dep_info_list);
-                        break;
-                    default:
-                        Console.WriteLine("Unknown command");
-                        break;
-                }
-
-            }
-            End();
-        }
-
-        static List<Department> ReadFromFile(List<Department> dep_info_list)
-            {
-            string all_text = File.ReadAllText(@"C:\Users\Admin\source\repos\YuriiDmytruk\Projects\C#&.Net\Internship\Task1Class\Task1Class\DepInfoFile.txt");
-            char[] text_by_letter = new char[all_text.Length];
-            text_by_letter = all_text.ToCharArray();
-
-            List<string> word_list = new List<string>();
-
-            string word = "";
-            foreach (char letter in text_by_letter)
-            {
-                if (letter == ';')
-                {
-                    Validator to_valid = new Validator(word, "all");
-                    word = to_valid.Validate();
-                    word_list.Add(word);
-                    char[] x = new char[word.Length];
-                    x = word.ToCharArray();
-                    word = "";
-                }
-                else if(letter == ' ')
-                {
-                    continue;
-                }
-                else if (letter == ':')
-                {
-
-                    Department to_add = new Department();
-                    to_add.SetDep(word_list);
-                    dep_info_list.Add(to_add);
-                    word_list.Clear();
+                    break;
                 }
                 else
                 {
-                    word += letter;
+                    string fileName = files[fileID];
+                    ObjectManager objectManager = new ObjectManager(fileName);
+
+                    while (true)
+                    {
+                        int choice = Util.AskUserForChoice(new List<string> { "Exit", "Add", "Delete", "Change", "Sort", "Search", "Print" });
+                        if (choice == 0)
+                        {
+                            break;
+                        }
+                        else if (choice == 1)
+                        {
+                            Add(objectManager);
+                            continue;
+                        }
+                        else if (choice == 2)
+                        {
+                            Delete(objectManager);
+                            continue;
+                        }
+                        else if (choice == 3)
+                        {
+                            Change(objectManager);
+                            continue;
+                        }
+                        else if (choice == 4)
+                        {
+                            Sort(objectManager);
+                            continue;
+                        }
+                        else if (choice == 5)
+                        {
+                            Search(objectManager);
+                            continue;
+                        }
+                        else if (choice == 6)
+                        {
+                            objectManager.Print(objectManager.LoadData());
+                            continue;
+                        }
+                        else
+                        {
+                            Console.WriteLine("Unknown command");
+                            continue;
+                        }
+                    }
                 }
             }
-            return dep_info_list;
-            }
 
-        static void Search(List<Department> dep_info_list)
+            End();
+        }
+        static void Search(ObjectManager objectManager)
         {
-
-            List<Department> found = new List<Department>();
+            ObjectMetaData metaData = objectManager.GetMetaData();
+            List<object> dataList = objectManager.LoadData();
 
             Console.WriteLine("Input text");
             string to_find = Console.ReadLine();
 
-            string word_to_check;
-            Department curent_dep;
-            for(int dep_counter = 0; dep_counter < dep_info_list.Count; dep_counter++)
+            string wordToCheck;
+            for (int objectIndex = 0; objectIndex < dataList.Count; objectIndex++)
             {
-                curent_dep = dep_info_list[dep_counter];
-                for(int field_counter = 0; field_counter < curent_dep.Count(); field_counter++)
+                for (int fieldCounter = 0; fieldCounter < metaData.fieldNames.Count; fieldCounter++)
                 {
-                    word_to_check = curent_dep.Get(curent_dep.GetFieldName(field_counter));
-                    
-                    if (to_find.Length > word_to_check.Length) { break; }
+                    wordToCheck = ObjectManager.GetValue(dataList[objectIndex], metaData.fieldNames[fieldCounter]);
+
+                    if (to_find.Length > wordToCheck.Length) { break; }
                     else
                     {
-                        bool find = false;
-                        find = Comp(word_to_check, to_find);
-                        if (find == true)
+                        if (Util.Contains(wordToCheck, to_find))
                         {
-                            found.Add(curent_dep);
+                            objectManager.Print(dataList[objectIndex]);
                             break;
                         }
                     }
                 }
             }
-            foreach(Department x in found)
-            {
-                x.Print();
-            }
-            if (found.Count == 0)
-            {
-                Console.WriteLine("Nothing found");
-            }
         }
-
-        static bool Comp(string check, string find)
+        static void Sort(ObjectManager objectManager)
         {
-            char[] find_arr = new char[find.Length];
-            char[] check_arr = new char[check.Length];
-            check_arr = check.ToCharArray();
-            find_arr = find.ToCharArray();
-            char[] plus_arr = new char[find_arr.Length];
-            for(int check_counter = 0; check_counter < check_arr.Length - find_arr.Length + 1; check_counter++)
+            Console.WriteLine("What do you want to sort by?");
+            objectManager.PrintFields();
+
+            string key = Console.ReadLine();
+            List<object> dataList = objectManager.LoadData();
+            if (ObjectManager.GetValue(dataList[0], key) == null)
             {
-                for (int find_counter = 0; find_counter < find_arr.Length; find_counter++)
+                return;
+            }
+
+            ObjectMetaData metaData = objectManager.GetMetaData();
+            bool sortAscending = (Util.AskUserForChoice(new List<string> { "Descending", "Ascending" }) == 1);
+            for (int i = 1; i < metaData.fieldNames.Count; i++)
+            {
+                for (int j = 0; j < dataList.Count - i; j++)
                 {
-                    if (find_arr[find_counter] == check_arr[check_counter + find_counter])
+                    if (sortAscending)
                     {
-                        plus_arr[find_counter] = '+';
+                        if (String.Compare(ObjectManager.GetValue(dataList[j], key), ObjectManager.GetValue(dataList[j + 1], key)) > 0)
+                        {
+                            Util.Swap(dataList, j, j + 1);
+                        }
                     }
                     else
                     {
-                        plus_arr[find_counter] = '-';
-                    }
-                }
-                bool x = true;
-                for(int i = 0; i < plus_arr.Length;i++)
-                {
-                    
-                    if (plus_arr[i] != '+')
-                    {
-                        x = false;
-                        break;
-                    }                      
-                }
-                if (x)
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        static List<Department> Sort(List<Department> dep_info_list)
-        {
-            Console.WriteLine("What do you want to sort by?");
-            Console.WriteLine("id; title; director_name; phone_number; monthly_budget; yearly_budget; website_url");
-            string key = Console.ReadLine();
-            int len = dep_info_list.Count;
-
-            List<Department> copy = new List<Department>();
-            copy = dep_info_list;
-            if (copy[0].Get(key) != null)
-            {
-                for (int i = 1; i < len; i++)
-                {
-                    for (int j = 0; j < len - i; j++)
-                    {
-                        if (String.Compare(copy[j].Get(key), copy[j + 1].Get(key)) > 0)
+                        if (String.Compare(ObjectManager.GetValue(dataList[j], key), ObjectManager.GetValue(dataList[j + 1], key)) < 0)
                         {
-                            Swap(j, j + 1, copy);
+                            Util.Swap(dataList, j, j + 1);
                         }
                     }
                 }
-                dep_info_list = Save(dep_info_list, copy);
-                return dep_info_list;
             }
-            else
-            {
-                return dep_info_list;
-            }
+
+            PromptToSaveChanges(objectManager, dataList);
         }
-
-        static List<Department> Swap (int x, int y, List<Department> dep_info_list)
+        static void Add(ObjectManager objectManager)
         {
-            Department help = dep_info_list[x];
-            dep_info_list[x] = dep_info_list[y];
-            dep_info_list[y] = help;
-            return dep_info_list;
-        }
+            List<string> fieldNames = objectManager.GetFormattedFieldNames();
+            List<object> dataList = objectManager.LoadData();
+            ObjectMetaData metaData = objectManager.GetMetaData();
 
-        static void PrintAll(List<Department> dep_info_list)
-        {
-            foreach(Department x in dep_info_list)
-            {
-                x.Print();
-            }
-            Console.WriteLine("------------------------------");
-        }
+            Console.WriteLine("Input info:");
+            Object newObject = objectManager.CreateObject();
 
-        static List<Department> Add(List<Department> dep_info_list)
-        {
-            Department new_dep = new Department();
-            List<string> new_list = new List<string>();
-            Console.WriteLine("Input department info:");
-            string[] masseges = new string[] {"Id: ", "Title: ", "Director name: ", "Phone number: ", "Monthly budget: ", "Yearly budget: ", "Website url: "};
-            string value_to_add;
-            for(int i = 0; i < masseges.Length; i++)
+            string userInput = null;
+            for (int i = 0; i < fieldNames.Count; i++)
             {
-                Console.Write(masseges[i]);
-                value_to_add = Console.ReadLine();
-                new_list.Add(value_to_add);
-            }
-            List<Department> copy = new List<Department>();
-            copy = dep_info_list;
-            new_dep.SetDep(new_list);
-            copy.Add(new_dep);
-            dep_info_list = Save(dep_info_list, copy);
-            return dep_info_list;
-        }
-
-        static List<Department> Delete(List<Department> dep_info_list)
-        {
-            int list_delete_id = FindElement(dep_info_list, "Input department id to delete: ");
-            if (list_delete_id == -1)
-            {
-                Console.WriteLine("Nothing was found");
-                return dep_info_list;
-            }
-            else
-            {
-                Console.WriteLine("This item will be deleted:");
-                dep_info_list[list_delete_id].Print();
-                List<Department> copy = new List<Department>();
-                copy = dep_info_list;
-                copy.RemoveAt(list_delete_id);
-                dep_info_list = Save(dep_info_list, copy);
-                return dep_info_list;
-            }
-        }
-
-        static List<Department> Cheange(List<Department> dep_info_list)
-        {
-            int list_cheange_id = FindElement(dep_info_list, "Input department id to cheange: ");
-            if (list_cheange_id == -1)
-            {
-                Console.WriteLine("Nothing was found");
-                return dep_info_list;
-            }
-            else
-            {
-                Console.WriteLine("This item will be cheanget:");
-                dep_info_list[list_cheange_id].Print();
-
-                Console.WriteLine("What do you want to change?");
-                Console.WriteLine("id; title; director_name; phone_number; monthly_budget; yearly_budget; website_url");
-                string key = Console.ReadLine();
-                if (dep_info_list[0].Get(key) != null)
+                while (true)
                 {
-                    Console.Write("Input new value: ");
-                    string value = Console.ReadLine();
+                    Console.Write(fieldNames[i]);
+                    userInput = Console.ReadLine();
+                    if (!Validator.ValidateAndInform(userInput, metaData.validationRules[i]))
+                    {
+                        continue;
+                    }
+                    if (!ObjectManager.IsIdField(fieldNames[i]) & !ObjectManager.IsIdUnique(dataList, userInput))
+                    {
+                        continue;
+                    }
 
-                    List<Department> copy = new List<Department>();
-                    copy = dep_info_list;
-                    copy[list_cheange_id].Set(value, key);
-                    dep_info_list = Save(dep_info_list, copy);
-                    return dep_info_list;
-                }
-                else
-                {
-                    return dep_info_list;
-                }
-            }
-        }
-
-        static List<Department> Save(List<Department> old, List<Department> edited)
-        {
-            string save;
-            Console.WriteLine("Your file will look like:");
-            PrintAll(edited);
-            Console.WriteLine("Save Cheanges?");
-            Console.WriteLine("0 - No, 1 - Yes");
-            save = Console.ReadLine();
-            bool exit = false;
-            while (exit == false)
-            {
-                if(save == "0")
-                {
-                    exit = true;
-                    return old;
-                }
-                else if (save == "1")
-                {
-                    SaveToFile(edited);
-                    exit = true;
-                    return edited;
-                }
-                else
-                {
-                    Console.WriteLine("Unlnown command");
-                }
-            }
-            return old;
-        }
-
-        static void SaveToFile(List<Department> to_save)
-        {
-            string text = "";
-            for(int list_iter = 0; list_iter < to_save.Count; list_iter++)
-            {
-                for(int dep_iter = 0; dep_iter < to_save[list_iter].Count(); dep_iter++)
-                {
-                    text += to_save[list_iter].Get(to_save[list_iter].GetFieldName(dep_iter));
-                    text += ";";
-                }
-                text += ":" + Environment.NewLine;
-            }
-            File.WriteAllText(@"C:\Users\Admin\source\repos\YuriiDmytruk\Projects\C#&.Net\Internship\Task1Class\Task1Class\DepInfoFile.txt", text);
-            Console.WriteLine("Saved");
-        }
-
-        static int FindElement(List<Department> dep_info_list, string text)
-        {
-            string id;
-            Console.Write(text);
-            id = Console.ReadLine();
-            int list_id = -1;
-            for (int i = 0; i < dep_info_list.Count; i++)
-            {
-                if (dep_info_list[i].Get("id") == id)
-                {
-                    list_id = i;
                     break;
                 }
+
+                ObjectManager.SetValue(newObject, metaData.fieldNames[i], userInput);
             }
-            return list_id;
+            dataList.Add(newObject);
+
+            PromptToSaveChanges(objectManager, dataList);
         }
+        static void Delete(ObjectManager objectManager)
+        {
+            List<object> dataList = objectManager.LoadData();
+            int listDeleteId = Util.FindElement(dataList, "Input id to delete: ");
+            if (listDeleteId == -1)
+            {
+                Console.WriteLine("Nothing was found");
+            }
+            else
+            {
+                Console.WriteLine("This item will be deleted: ");
+                objectManager.Print(dataList[listDeleteId]);
+                dataList.RemoveAt(listDeleteId);
+                PromptToSaveChanges(objectManager, dataList);
+            }
+        }
+        static void Change(ObjectManager objectManager)
+        {
+            List<object> dataList = objectManager.LoadData();
+            int listChangeId = Util.FindElement(dataList, "Input id to change: ");
+            if (listChangeId == -1)
+            {
+                Console.WriteLine("Nothing was found");
+            }
+            else
+            {
+                Console.WriteLine("This item will be changet:");
+                objectManager.Print(dataList[listChangeId]);
+                Console.WriteLine("What do you want to change?");
+                objectManager.PrintFields();
+                List<string> fieldNames = objectManager.GetFormattedFieldNames();
+                string key = Console.ReadLine();
+                string userInput = null;
+                if (ObjectManager.GetValue(dataList[0], key) == null)
+                {
+                }
+                else
+                {
+                    while (true)
+                    {
+                        ObjectMetaData metaData = objectManager.GetMetaData();
+                        Console.Write("Input new value: ");
+                        userInput = Console.ReadLine();
+                        if (!Validator.ValidateAndInform(userInput, metaData.validationRules[objectManager.GetFieldIndexByKey(key)]))
+                        {
+                            Console.WriteLine("Id should contain only numbers");
+                            continue;
+                        }
+                        if (!ObjectManager.IsIdField(fieldNames[objectManager.GetFieldIndexByKey(key)]) & !ObjectManager.IsIdUnique(dataList, userInput))
+                        {
+                            Console.WriteLine("Such id already exists");
+                            continue;
+                        }
+
+                        break;
+                    }
+                    dataList[listChangeId] = ObjectManager.SetValue(dataList[listChangeId], key, userInput);
+                    PromptToSaveChanges(objectManager, dataList);
+                }
+            }
+        }
+        static void End()
+        {
+            Console.WriteLine("Press any key to exit");
+            System.Console.ReadKey();
+        }
+        private static void PromptToSaveChanges(ObjectManager objectManager, List<object> dataList)
+        {
+            Console.WriteLine("Your data list looks like: ");
+            objectManager.Print(dataList);
+
+            Console.WriteLine("Would you like to Save Changes?");
+            if ((Util.AskUserForChoice(new List<string> { "No", "Yes" }) == 1))
+            {
+                objectManager.SaveData(dataList);
+            }
+        }
+
     }
 }

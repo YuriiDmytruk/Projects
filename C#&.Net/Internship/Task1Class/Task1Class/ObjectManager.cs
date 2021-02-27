@@ -39,7 +39,7 @@ namespace Task1Class
                 }
                 else
                 {
-                    Object newObject = CreateObject();
+                    object newObject = CreateObject();
                     newObject = SetAllValues(newObject, new List<string>(line.Split(ValueSeparator)));
                     result.Add(newObject);
                 }
@@ -71,7 +71,7 @@ namespace Task1Class
             Console.WriteLine("Saved Data into file: " + fileName);
         }
 
-        public static string GetValue(Object classObject, string key)
+        public static string GetValue(object classObject, string key)
         {
             Type type = classObject.GetType();
             PropertyInfo prop = type.GetProperty(key);
@@ -86,7 +86,7 @@ namespace Task1Class
             return null;
         }
 
-        public static Object SetValue(Object classObject, string key, string value)
+        public static object SetValue(object classObject, string key, string value)
         {
             Type t = classObject.GetType();
             PropertyInfo prop = t.GetProperty(key);
@@ -119,10 +119,21 @@ namespace Task1Class
             Console.WriteLine(ListToText(metaData.fieldNames));
         }
 
-        public Object CreateObject()
+        public object CreateObject()
         {
             ObjectHandle handle = Activator.CreateInstance(null, metaData.className);
-            return handle.Unwrap();
+            if (handle.Unwrap() is object)
+            {
+                return (object)handle.Unwrap();
+            }
+            try
+            {
+                return (object)Convert.ChangeType(handle.Unwrap(), typeof(object));
+            }
+            catch (InvalidCastException)
+            {
+                return default(object);
+            }
         }
 
         public List<string> GetFormattedFieldNames()
@@ -143,7 +154,7 @@ namespace Task1Class
 
         public static bool IsIdUnique(List<object> items, string idValueToCheck)
         {
-            foreach (Object obj in items)
+            foreach (object obj in items)
             {
                 if (GetValue(obj, IdKeyName) == idValueToCheck)
                 {
@@ -154,13 +165,12 @@ namespace Task1Class
             return true;
         }
 
-
         public int GetFieldIndexByKey(string key)
         {
             return metaData.fieldNames.IndexOf(key);
         }
 
-        private Object SetAllValues(Object classObject, List<string> values)
+        private object SetAllValues(object classObject, List<string> values)
         {
             Type t = classObject.GetType();
             for (int i = 0; i < metaData.fieldNames.Count; i++)

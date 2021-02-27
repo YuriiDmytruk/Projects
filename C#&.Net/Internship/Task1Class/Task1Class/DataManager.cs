@@ -1,84 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-
-// Add wrong metaDate Exceptions
-
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Task1Class
 {
-    class Program
+    class DataManager
     {
-        static void Main(string[] args)
+        private ObjectManager objectManager;
+        private List<object> dataList = new List<object>();
+        public DataManager(string fileName)
         {
-            while (true)
-            {
-                List<string> files = Util.GetFiles(Directory.GetCurrentDirectory());
-                files.Insert(0, "Exit");
-                Console.WriteLine("Select a file:");
-                int fileID = Util.AskUserForChoice(Util.ToFileNamesOnly(files));
-
-                if (fileID == 0)
-                {
-                    break;
-                }
-                else
-                {
-                    string fileName = files[fileID];
-                    ObjectManager objectManager = new ObjectManager(fileName);
-
-                    while (true)
-                    {
-                        int choice = Util.AskUserForChoice(new List<string> { "Exit", "Add", "Delete", "Change", "Sort", "Search", "Print" });
-                        if (choice == 0)
-                        {
-                            break;
-                        }
-                        else if (choice == 1)
-                        {
-                            Add(objectManager);
-                            continue;
-                        }
-                        else if (choice == 2)
-                        {
-                            Delete(objectManager);
-                            continue;
-                        }
-                        else if (choice == 3)
-                        {
-                            Change(objectManager);
-                            continue;
-                        }
-                        else if (choice == 4)
-                        {
-                            Sort(objectManager);
-                            continue;
-                        }
-                        else if (choice == 5)
-                        {
-                            Search(objectManager);
-                            continue;
-                        }
-                        else if (choice == 6)
-                        {
-                            objectManager.Print(objectManager.LoadData());
-                            continue;
-                        }
-                        else
-                        {
-                            Console.WriteLine("Unknown command");
-                            continue;
-                        }
-                    }
-                }
-            }
-
-            End();
+            this.objectManager = new ObjectManager(fileName);
+            this.dataList = objectManager.LoadData();
         }
-        static void Search(ObjectManager objectManager)
+        public void Search()
         {
             ObjectMetaData metaData = objectManager.GetMetaData();
-            List<object> dataList = objectManager.LoadData();
 
             Console.WriteLine("Input text");
             string to_find = Console.ReadLine();
@@ -93,7 +32,7 @@ namespace Task1Class
                     if (to_find.Length > wordToCheck.Length) { break; }
                     else
                     {
-                        if (Util.Contains(wordToCheck, to_find))
+                        if (Util<string>.Contains(wordToCheck, to_find))
                         {
                             objectManager.Print(dataList[objectIndex]);
                             break;
@@ -102,20 +41,19 @@ namespace Task1Class
                 }
             }
         }
-        static void Sort(ObjectManager objectManager)
+        public void Sort()
         {
             Console.WriteLine("What do you want to sort by?");
             objectManager.PrintFields();
 
             string key = Console.ReadLine();
-            List<object> dataList = objectManager.LoadData();
             if (ObjectManager.GetValue(dataList[0], key) == null)
             {
                 return;
             }
 
             ObjectMetaData metaData = objectManager.GetMetaData();
-            bool sortAscending = (Util.AskUserForChoice(new List<string> { "Descending", "Ascending" }) == 1);
+            bool sortAscending = (Util<string>.AskUserForChoice(new List<string> { "Descending", "Ascending" }) == 1);
             for (int i = 1; i < metaData.fieldNames.Count; i++)
             {
                 for (int j = 0; j < dataList.Count - i; j++)
@@ -124,14 +62,14 @@ namespace Task1Class
                     {
                         if (String.Compare(ObjectManager.GetValue(dataList[j], key), ObjectManager.GetValue(dataList[j + 1], key)) > 0)
                         {
-                            Util.Swap(dataList, j, j + 1);
+                            Util<object>.Swap(dataList, j, j + 1);
                         }
                     }
                     else
                     {
                         if (String.Compare(ObjectManager.GetValue(dataList[j], key), ObjectManager.GetValue(dataList[j + 1], key)) < 0)
                         {
-                            Util.Swap(dataList, j, j + 1);
+                            Util<object>.Swap(dataList, j, j + 1);
                         }
                     }
                 }
@@ -139,14 +77,13 @@ namespace Task1Class
 
             PromptToSaveChanges(objectManager, dataList);
         }
-        static void Add(ObjectManager objectManager)
+        public void Add()
         {
             List<string> fieldNames = objectManager.GetFormattedFieldNames();
-            List<object> dataList = objectManager.LoadData();
             ObjectMetaData metaData = objectManager.GetMetaData();
 
             Console.WriteLine("Input info:");
-            Object newObject = objectManager.CreateObject();
+            object newObject = objectManager.CreateObject();
 
             string userInput = null;
             for (int i = 0; i < fieldNames.Count; i++)
@@ -173,10 +110,10 @@ namespace Task1Class
 
             PromptToSaveChanges(objectManager, dataList);
         }
-        static void Delete(ObjectManager objectManager)
+        public void Delete()
         {
-            List<object> dataList = objectManager.LoadData();
-            int listDeleteId = Util.FindElement(dataList, "Input id to delete: ");
+            Console.Write("Input id to delete: ");
+            int listDeleteId = Util<object>.FindElement(dataList);
             if (listDeleteId == -1)
             {
                 Console.WriteLine("Nothing was found");
@@ -189,10 +126,10 @@ namespace Task1Class
                 PromptToSaveChanges(objectManager, dataList);
             }
         }
-        static void Change(ObjectManager objectManager)
+        public void Change()
         {
-            List<object> dataList = objectManager.LoadData();
-            int listChangeId = Util.FindElement(dataList, "Input id to change: ");
+            Console.WriteLine("Input id to change: ");
+            int listChangeId = Util<object>.FindElement(dataList);
             if (listChangeId == -1)
             {
                 Console.WriteLine("Nothing was found");
@@ -234,10 +171,9 @@ namespace Task1Class
                 }
             }
         }
-        static void End()
+        public void Print()
         {
-            Console.WriteLine("Press any key to exit");
-            System.Console.ReadKey();
+            objectManager.Print(objectManager.LoadData());
         }
         private static void PromptToSaveChanges(ObjectManager objectManager, List<object> dataList)
         {
@@ -245,11 +181,10 @@ namespace Task1Class
             objectManager.Print(dataList);
 
             Console.WriteLine("Would you like to Save Changes?");
-            if ((Util.AskUserForChoice(new List<string> { "No", "Yes" }) == 1))
+            if ((Util<string>.AskUserForChoice(new List<string> { "No", "Yes" }) == 1))
             {
                 objectManager.SaveData(dataList);
             }
         }
-
     }
 }

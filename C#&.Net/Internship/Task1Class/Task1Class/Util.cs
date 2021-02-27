@@ -5,12 +5,12 @@ using System.Text.RegularExpressions;
 
 namespace Task1Class
 {
-    static class Util
+    static class Util<T>
     {
-        public static bool Contains(string container, string find)
+        public static bool Contains(T container, T textToFind)
         {
-            char[] find_arr = find.ToCharArray();
-            char[] check_arr = container.ToCharArray();
+            char[] find_arr = Convert.ToString(textToFind).ToCharArray();
+            char[] check_arr = Convert.ToString(container).ToCharArray();
             char[] plus_arr = new char[find_arr.Length];
             for (int check_counter = 0; check_counter < check_arr.Length - find_arr.Length + 1; check_counter++)
             {
@@ -42,22 +42,22 @@ namespace Task1Class
             }
             return false;
         }
-        public static List<object> Swap(List<object> list, int indexFrom, int indexTo)
+        public static List<T> Swap(List<T> list, int indexFrom, int indexTo)
         {
-            Object help = list[indexFrom];
+            T help = list[indexFrom];
             list[indexFrom] = list[indexTo];
             list[indexTo] = help;
             return list;
         }
-        public static int FindElement(List<object> dataList, string text)
+        public static int FindElement(List<T> list)
         {
             string id;
-            Console.Write(text);
+
             id = Console.ReadLine();
             int listId = -1;
-            for (int i = 0; i < dataList.Count; i++)
+            for (int i = 0; i < list.Count; i++)
             {
-                if (ObjectManager.GetValue(dataList[i], "id") == id)
+                if (ObjectManager.GetValue(list[i], "id") == id)
                 {
                     listId = i;
                     break;
@@ -80,7 +80,7 @@ namespace Task1Class
             }
             return fileNames;
         }
-        public static int AskUserForChoice(List<string> options)
+        public static int AskUserForChoice(List<T> options)
         {
             for (int index = 0; index < options.Count; index++)
             {

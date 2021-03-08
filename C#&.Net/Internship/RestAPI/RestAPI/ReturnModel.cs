@@ -6,19 +6,19 @@ namespace RestAPI
     {
         public List<Customer> customers { get; set; }
         public string status { get; set; }
-        public string massage { get; set; }
+        public string message { get; set; }
 
         public ReturnModel(List<Customer> customers, string status, string massage)
         {
             this.customers = customers;
-            this.massage = massage;
+            this.message = massage;
             this.status = status;
         }
 
         public ReturnModel()
         {
             customers = new List<Customer>();
-            massage = "";
+            message = "";
             status = "";
         }
     }

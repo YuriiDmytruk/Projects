@@ -1,1 +1,12 @@
 /.idea/*
+/C#&.Net/.vs
+
+/C#&.Net/Internship/RestAPI/RestAPI/bin/Debug/netcoreapp3.1
+/C#&.Net/Internship/RestAPI/RestAPI/obj
+/C#&.Net/Internship/RestAPI/RestAPI/Properties
+/C#&.Net/Internship/RestAPI/RestAPI/appsettings.Development.json
+/C#&.Net/Internship/RestAPI/RestAPI/appsettings.json
+/C#&.Net/Internship/RestAPI/RestAPI.sln
+/C#&.Net/Internship/RestAPI/RestAPI/RestAPI.csproj
+/C#&.Net/Internship/RestAPI/.vs/RestAPI
+/C#&.Net/Internship/Task1Class

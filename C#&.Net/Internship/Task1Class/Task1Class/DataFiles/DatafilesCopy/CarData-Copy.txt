@@ -1,0 +1,7 @@
+CarDTO
+id;brand;model;registration_number;last_repaired_at;bought_at;car_mileage
+numbers;letters;letters;^[A-Z]{2}[0-9]{4}[A-Z]{2}$;date;date;double
+145;Nissan;Rogue;BC1988CD;12-01-2002;23-05-1994;4324
+124;Toyota;HighLender;DS2132GF;21-05-2001;12-05-2000;5876
+123;Honda;Civic;BC1234BC;12-01-2002;13-11-1991;1234.2
+135;Ford;Mustang;XX1111XX;19-02-2021;01-01-2020;10000

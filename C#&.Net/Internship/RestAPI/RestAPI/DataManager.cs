@@ -6,96 +6,180 @@ namespace RestAPI
 {
     public class DataManager
     {
-        public static void CreaetDB()
+
+        public static DataOut GetId(DataIn data, MySqlConnection connection)
         {
-            string cs = GetConnectionString();
-
-            var connection = new MySqlConnection(cs);
-            connection.Open();
-
-            connection.Close();
-        }
-
-        public static Customer GetCustomer(int id)
-        {
-            MySqlConnection connection = new MySqlConnection(GetConnectionString());
-            connection.Open();
-
-            string sql = "SELECT * FROM customers WHERE id = " + id;
-            MySqlCommand customerCommand = new MySqlCommand(sql, connection);
-
-            DataTable customerTable = new DataTable();
-            MySqlDataAdapter adapter = new MySqlDataAdapter(customerCommand);
-            adapter.Fill(customerTable);
-
-            Customer result = null;
-            if (customerTable.Rows.Count > 0)
+            if (data != null & connection != null)
             {
-                DataRow row = customerTable.Rows[0];
-                result = new Customer(row.Field<int>("id"), row.Field<string>("name"), row.Field<string>("email"));
+                int id = data.id;
+                string sql = "SELECT * FROM departments WHERE id = " + id;
+                MySqlCommand customerCommand = new MySqlCommand(sql, connection);
+
+                DataTable customerTable = new DataTable();
+                MySqlDataAdapter adapter = new MySqlDataAdapter(customerCommand);
+                adapter.Fill(customerTable);
+
+                DepartmentDTO result = null;
+                if (customerTable.Rows.Count > 0)
+                {
+                    DataRow row = customerTable.Rows[0];
+                    result = new DepartmentDTO(row.Field<int>("id"),
+                        row.Field<string>("title"),
+                        row.Field<string>("director_name"),
+                        row.Field<string>("phone_number"),
+                        row.Field<string>("monthly_budget"),
+                        row.Field<string>("yearly_budget"),
+                        row.Field<string>("website_url"));
+                }
+
+                return new DataOut(new List<DepartmentDTO>() { result }, true);
+            }
+            else
+            {
+                return new DataOut(new List<DepartmentDTO>(), false);
             }
 
-            connection.Close();
-            return result;
         }
 
-        public static List<Customer> GetAllCustomers()
+        public static DataOut Put(DataIn data, MySqlConnection connection)
         {
-            MySqlConnection connection = new MySqlConnection(GetConnectionString());
-            connection.Open();
-
-            string sql = "SELECT * FROM customers";
-            MySqlCommand customerCommand = new MySqlCommand(sql, connection);
-
-            DataTable customerTable = new DataTable();
-            MySqlDataAdapter adapter = new MySqlDataAdapter(customerCommand);
-            adapter.Fill(customerTable);
-
-            List<Customer> result = new List<Customer>();
-            foreach (DataRow row in customerTable.Rows)
+            if (data != null & connection != null)
             {
-                result.Add(new Customer(row.Field<int>("id"), row.Field<string>("name"), row.Field<string>("email")));
+                DepartmentDTO department = data.department;
+                int id = data.id;
+
+                string commandText = "UPDATE departments SET ";
+
+                List<string> fieldArr = DepartmentDTO.GetFieldList();
+                fieldArr.RemoveAt(0);
+                List<string> valueList = department.GetValueList();
+                valueList.RemoveAt(0);
+
+                for (int i = 0; i < fieldArr.Count; i++)
+                {
+                    if (valueList[i] != null)
+                    {
+                        commandText += fieldArr[i] + "='" + valueList[i] + "',";
+                    }
+                }
+
+                commandText = UtilT<string>.DeleteLastChar(commandText);
+
+                commandText += " WHERE id=" + id;
+
+                MySqlCommand command = new MySqlCommand(commandText, connection);
+
+                int result = command.ExecuteNonQuery();
+                return new DataOut(null, result > 0);
             }
-
-            connection.Close();
-            return result;
+            else
+            {
+                return new DataOut(new List<DepartmentDTO>(), false);
+            }
         }
 
-        public static bool DeleteCustomer(int id)
+        public static DataOut Get(DataIn data, MySqlConnection connection)
         {
-            MySqlConnection connection = new MySqlConnection(GetConnectionString());
-            connection.Open();
+            if (data != null & connection != null)
+            {
+                string sql = "SELECT * FROM departments";
+                MySqlCommand customerCommand = new MySqlCommand(sql, connection);
 
-            string sql = "DELETE FROM customers WHERE id = " + id;
-            MySqlCommand command = new MySqlCommand(sql, connection);
+                DataTable customerTable = new DataTable();
+                MySqlDataAdapter adapter = new MySqlDataAdapter(customerCommand);
+                adapter.Fill(customerTable);
 
-            int result = command.ExecuteNonQuery();
-            connection.Close();
+                List<DepartmentDTO> result = new List<DepartmentDTO>();
+                foreach (DataRow row in customerTable.Rows)
+                {
+                    result.Add(new DepartmentDTO(row.Field<int>("id"),
+                        row.Field<string>("title"),
+                        row.Field<string>("director_name"),
+                        row.Field<string>("phone_number"),
+                        row.Field<string>("monthly_budget"),
+                        row.Field<string>("yearly_budget"),
+                        row.Field<string>("website_url")));
+                }
 
-            return result > 0;
+                return new DataOut(result, true);
+            }
+            else
+            {
+                return new DataOut(new List<DepartmentDTO>(), false);
+            }
         }
 
-        public static Customer InsertCustomer(Customer customer)
+        public static DataOut Delete(DataIn data, MySqlConnection connection)
         {
-            MySqlConnection connection = new MySqlConnection(GetConnectionString());
-            connection.Open();
+            if (data != null & connection != null)
+            {
+                int id = data.id;
+                string sql = "DELETE FROM departments WHERE id = " + id;
+                MySqlCommand command = new MySqlCommand(sql, connection);
 
-            MySqlCommand command = new MySqlCommand();
-            command.Connection = connection;
-            command.CommandText = "INSERT INTO customers(name, email) VALUES(?name,?email)";
-            command.Parameters.Add("?name", MySqlDbType.VarChar).Value = customer.name;
-            command.Parameters.Add("?email", MySqlDbType.VarChar).Value = customer.email;
+                int result = command.ExecuteNonQuery();
 
-            command.ExecuteNonQuery();
-            customer.id = command.LastInsertedId;
-            connection.Close();
-
-            return customer;
+                return new DataOut(null, result > 0);
+            }
+            else
+            {
+                return new DataOut(new List<DepartmentDTO>(), false);
+            }
         }
 
-        private static string GetConnectionString()
+        public static DataOut Post(DataIn data, MySqlConnection connection)
         {
-            return "datasource=localhost;port=3306;database=rest_api;username=root;password=1111;";
+            if (data != null & connection != null)
+            {
+                DepartmentDTO department = data.department;
+
+                string commandText = "INSERT INTO departments(";
+
+                List<string> fieldList = DepartmentDTO.GetFieldList();
+                fieldList.RemoveAt(0);
+
+                foreach (string field in fieldList)
+                {
+                    commandText += field + ", ";
+                }
+
+                commandText = UtilT<string>.DeleteLastChar(commandText);
+                commandText = UtilT<string>.DeleteLastChar(commandText);
+
+                commandText += ") VALUES(";
+
+                List<string> valueList = department.GetValueList();
+                valueList.RemoveAt(0);
+
+                foreach (string field in fieldList)
+                {
+                    commandText += "?" + field + ",";
+                }
+
+                commandText = UtilT<string>.DeleteLastChar(commandText);
+
+                commandText += ")";
+
+
+                MySqlCommand command = new MySqlCommand();
+
+                command.Connection = connection;
+                command.CommandText = commandText;
+
+                for (int i = 0; i < valueList.Count; i++)
+                {
+                    command.Parameters.Add("?" + fieldList[i], MySqlDbType.VarChar).Value = valueList[i];
+                }
+
+                command.ExecuteNonQuery();
+                department.id = command.LastInsertedId;
+
+                return new DataOut(new List<DepartmentDTO>() { department }, true);
+            }
+            else
+            {
+                return new DataOut(new List<DepartmentDTO>(), false);
+            }
         }
     }
 }

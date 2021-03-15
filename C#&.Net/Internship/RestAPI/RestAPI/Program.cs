@@ -9,7 +9,6 @@ namespace RestAPI
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
-            DataManager.CreaetDB();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>

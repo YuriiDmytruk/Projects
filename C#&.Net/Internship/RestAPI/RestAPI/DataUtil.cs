@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 
@@ -11,7 +10,7 @@ namespace RestAPI
     {
         public static List<DepartmentDTO> Search(List<DepartmentDTO> departments, string find)
         {
-            if (departments != null & find != null)
+            if (departments != null && find != null)
             {
                 List<DepartmentDTO> result = new List<DepartmentDTO>();
                 Type type = typeof(DepartmentDTO);
@@ -38,6 +37,10 @@ namespace RestAPI
             }
             else
             {
+                if (departments == null)
+                {
+                    departments = new List<DepartmentDTO>();
+                }
                 return departments;
             }
         }
@@ -65,6 +68,10 @@ namespace RestAPI
             }
             else
             {
+                if (departments == null)
+                {
+                    departments = new List<DepartmentDTO>();
+                }
                 return departments;
             }
 

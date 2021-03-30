@@ -17,6 +17,9 @@ namespace RestAPI.Controllers
             DataOut dataOut = MySQLConnect.Connect(new System.Func<DataIn, MySqlConnection, DataOut>(DataManager.Get), dataIn);
 
             List<string> errorList = new List<string>();
+
+            dataOut.departments = DataUtil.Sort(dataOut.departments, sort_by, sort_type);
+
             if (page_size == 0)
             {
                 page_size = dataOut.departments.Count;
@@ -29,7 +32,7 @@ namespace RestAPI.Controllers
                 errorList.Add("Nothing was found during the search");
             }
 
-            dataOut.departments = DataUtil.Sort(dataOut.departments, sort_by, sort_type);
+            
 
 
             if (errorList.Count == 0)

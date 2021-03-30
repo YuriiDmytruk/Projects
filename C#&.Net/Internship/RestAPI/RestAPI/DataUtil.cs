@@ -22,8 +22,7 @@ namespace RestAPI
                     {
                         wordToCheck = GetValue(departments[objectIndex], type.GetProperties()[fieldCounter].Name);
 
-                        if (find.Length > wordToCheck.Length) { break; }
-                        else
+                        if (find.Length <= wordToCheck.Length)
                         {
                             if (UtilT<string>.Contains(wordToCheck, find))
                             {
@@ -47,7 +46,7 @@ namespace RestAPI
 
         public static List<DepartmentDTO> CreatePage(List<DepartmentDTO> departments, int page, int page_size)
         {
-            
+
             if (departments != null & page >= 0 & page_size >= 0)
             {
                 List<DepartmentDTO> result = new List<DepartmentDTO>();
@@ -124,7 +123,7 @@ namespace RestAPI
             }
             else
             {
-                if(departments == null)
+                if (departments == null)
                 {
                     departments = new List<DepartmentDTO>();
                 }

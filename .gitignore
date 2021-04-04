@@ -26,3 +26,10 @@
 /C#&.Net/Internship/RestAPI_UserRoles/RestAPI/RestAPI_UserRoles.csproj.user
 /C#&.Net/Internship/RestAPI_UserRoles/RestAPI/RestAPI_UserRoles.csproj
 /C#&.Net/Internship/RestAPI_UserRoles/RestAPI.sln
+*.sln
+/C#&.Net/Internship/RestAPI_UserRoles/.vs/RestAPI_UserRoles
+/C#&.Net/Internship/RestAPI_UserRoles/RestAPI_UserRoles/RestAPI_UserRoles.csproj
+/C#&.Net/Internship/RestAPI_UserRoles/RestAPI_UserRoles/appsettings.json
+/C#&.Net/Internship/RestAPI_UserRoles/RestAPI_UserRoles/appsettings.Development.json
+/C#&.Net/Internship/RestAPI_UserRoles/RestAPI_UserRoles/Properties
+/C#&.Net/Internship/RestAPI_UserRoles/RestAPI_UserRoles/obj

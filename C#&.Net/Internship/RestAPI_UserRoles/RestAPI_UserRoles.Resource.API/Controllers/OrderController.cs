@@ -21,33 +21,31 @@ namespace RestAPI_UserRoles.Resource.API.Controllers
         [HttpGet]
         public ReturnModel<OrderDTO> Get([FromQuery] string sort_by, [FromQuery] string sort_type, [FromQuery] string find, [FromQuery] int page_size, [FromQuery] int page)
         {
-
-            DataIn<OrderDTO> dataIn = new DataIn<OrderDTO>(null, 0, "");
-            DataOut<OrderDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<OrderDTO>, MySqlConnection, DataOut<OrderDTO>>(OrderDataManager.Get), dataIn);
+            List<OrderDTO> data = Redis.GetOrders();
 
             if (UserRole != "Admin")
             {
-                for (int i = 0; i < dataOut.data.Count; i++)
+                for (int i = 0; i < data.Count; i++)
                 {
-                    if (dataOut.data[i].user_id != UserId)
+                    if (data[i].user_id != UserId)
                     {
-                        dataOut.data.RemoveAt(i);
+                        data.RemoveAt(i);
                     }
                 }
             }
 
             List<string> errorList = new List<string>();
 
-            dataOut.data = DataUtil.Sort(dataOut.data, sort_by, sort_type);
+            data = DataUtil.Sort(data, sort_by, sort_type);
 
             if (page_size == 0)
             {
-                page_size = dataOut.data.Count;
+                page_size = data.Count;
             }
-            dataOut.data = DataUtil.CreatePage(dataOut.data, page, page_size);
+            data = DataUtil.CreatePage(data, page, page_size);
 
-            dataOut.data = DataUtil.Search(dataOut.data, find);
-            if (dataOut.data.Count == 0)
+            data = DataUtil.Search(data, find);
+            if (data.Count == 0)
             {
                 errorList.Add("Nothing was found during the search");
             }
@@ -56,13 +54,13 @@ namespace RestAPI_UserRoles.Resource.API.Controllers
             {
                 errorList.Add("None");
             }
-            if (dataOut.data.Count == 0)
+            if (data.Count == 0)
             {
-                return new ReturnModel<OrderDTO>(dataOut.data, "204", "Nothing found", dataOut.data.Count, page, errorList);
+                return new ReturnModel<OrderDTO>(data, "204", "Nothing found", data.Count, page, errorList);
             }
             else
             {
-                return new ReturnModel<OrderDTO>(dataOut.data, "200", "All Orders", dataOut.data.Count, page, errorList);
+                return new ReturnModel<OrderDTO>(data, "200", "All Orders", data.Count, page, errorList);
             }
         }
 
@@ -70,15 +68,14 @@ namespace RestAPI_UserRoles.Resource.API.Controllers
         [HttpGet("{id}")]
         public ReturnModel<OrderDTO> GetId(int id)
         {
+            List<OrderDTO> data = new List<OrderDTO>();
+            data.Add(Redis.GetIdOrders(id));
 
-            DataIn<OrderDTO> dataIn = new DataIn<OrderDTO>(null, id);
-            DataOut<OrderDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<OrderDTO>, MySqlConnection, DataOut<OrderDTO>>(OrderDataManager.GetId), dataIn);
-
-            if (dataOut.data.Count == 0)
+            if (data.Count == 0)
             {
                 return new ReturnModel<OrderDTO>(null, "204", "Order with id: " + id + " not found", 0, 0, new List<string>() { "Not Found" });
             }
-            else if (dataOut.data.Count == 1 && dataOut.data[0] == null)
+            else if (data.Count == 1 && data[0] == null)
             {
                 return new ReturnModel<OrderDTO>(null, "204", "Order with id: " + id + " not found", 0, 0, new List<string>() { "Not Found" });
             }
@@ -86,18 +83,18 @@ namespace RestAPI_UserRoles.Resource.API.Controllers
             {
                 if (UserRole != "Admin")
                 {
-                    if (dataOut.data[0].user_id != UserId)
+                    if (data[0].user_id != UserId)
                     {
-                        return new ReturnModel<OrderDTO>(dataOut.data, "401", "Forbiden", 0, dataOut.data.Count, new List<string>() { "This date is forbiden for you" });
+                        return new ReturnModel<OrderDTO>(data, "401", "Forbiden", 0, data.Count, new List<string>() { "This date is forbiden for you" });
                     }
                     else
                     {
-                        return new ReturnModel<OrderDTO>(dataOut.data, "200", "Order with id: " + id, 0, dataOut.data.Count, new List<string>() { "None" });
+                        return new ReturnModel<OrderDTO>(data, "200", "Order with id: " + id, 0, data.Count, new List<string>() { "None" });
                     }
                 }
                 else
                 {
-                    return new ReturnModel<OrderDTO>(dataOut.data, "200", "Order with id: " + id, 0, dataOut.data.Count, new List<string>() { "None" });
+                    return new ReturnModel<OrderDTO>(data, "200", "Order with id: " + id, 0, data.Count, new List<string>() { "None" });
                 }
             }
         }
@@ -129,7 +126,7 @@ namespace RestAPI_UserRoles.Resource.API.Controllers
             if (validate.errorList.Count == 0)
             {
                 DataIn<OrderDTO> dataIn = new DataIn<OrderDTO>(toAdd, 0);
-                DataOut<OrderDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<OrderDTO>, MySqlConnection, DataOut<OrderDTO>>(OrderDataManager.Post), dataIn);
+                DataOut<OrderDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<OrderDTO>, MySqlConnection, DataOut<OrderDTO>>(OrdersDataManager.Post), dataIn);
 
                 if (dataOut.errorMessage == "AmountError")
                 {
@@ -152,7 +149,7 @@ namespace RestAPI_UserRoles.Resource.API.Controllers
         public ReturnModel<OrderDTO> Delete(int id)
         {
             DataIn<OrderDTO> dataIn = new DataIn<OrderDTO>(new OrderDTO(), id, UserId, UserRole);
-            DataOut<OrderDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<OrderDTO>, MySqlConnection, DataOut<OrderDTO>>(OrderDataManager.Delete), dataIn);
+            DataOut<OrderDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<OrderDTO>, MySqlConnection, DataOut<OrderDTO>>(OrdersDataManager.Delete), dataIn);
 
             if (dataOut.success)
             {

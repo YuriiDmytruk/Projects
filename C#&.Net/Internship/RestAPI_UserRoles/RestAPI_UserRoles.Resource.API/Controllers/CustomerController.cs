@@ -24,21 +24,20 @@ namespace RestAPI_UserRoles.Controllers
         {
             if (UserRole == "Admin")
             {
-                DataIn<CustomerDTO> dataIn = new DataIn<CustomerDTO>(null, 0);
-                DataOut<CustomerDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<CustomerDTO>, MySqlConnection, DataOut<CustomerDTO>>(CustomersDataManager.Get), dataIn);
+                List<CustomerDTO> data = Redis.GetCustomers();
 
                 List<string> errorList = new List<string>();
 
-                dataOut.data = DataUtil.Sort(dataOut.data, sort_by, sort_type);
+                data = DataUtil.Sort(data, sort_by, sort_type);
 
                 if (page_size == 0)
                 {
-                    page_size = dataOut.data.Count;
+                    page_size = data.Count;
                 }
-                dataOut.data = DataUtil.CreatePage(dataOut.data, page, page_size);
+                data = DataUtil.CreatePage(data, page, page_size);
 
-                dataOut.data = DataUtil.Search(dataOut.data, find);
-                if (dataOut.data.Count == 0)
+                data = DataUtil.Search(data, find);
+                if (data.Count == 0)
                 {
                     errorList.Add("Nothing was found during the search");
                 }
@@ -47,13 +46,13 @@ namespace RestAPI_UserRoles.Controllers
                 {
                     errorList.Add("None");
                 }
-                if (dataOut.data.Count == 0)
+                if (data.Count == 0)
                 {
-                    return new ReturnModel<CustomerDTO>(dataOut.data, "204", "Nothing found", dataOut.data.Count, page, errorList);
+                    return new ReturnModel<CustomerDTO>(data, "204", "Nothing found", data.Count, page, errorList);
                 }
                 else
                 {
-                    return new ReturnModel<CustomerDTO>(dataOut.data, "200", "All Customers", dataOut.data.Count, page, errorList);
+                    return new ReturnModel<CustomerDTO>(data, "200", "All Customers", data.Count, page, errorList);
                 }
             }
             else
@@ -69,20 +68,20 @@ namespace RestAPI_UserRoles.Controllers
         {
             if (UserId == id || UserRole == "Admin")
             {
-                DataIn<CustomerDTO> dataIn = new DataIn<CustomerDTO>(null, id);
-                DataOut<CustomerDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<CustomerDTO>, MySqlConnection, DataOut<CustomerDTO>>(CustomersDataManager.GetId), dataIn);
+                List<CustomerDTO> data = new List<CustomerDTO>();
+                data.Add(Redis.GetIdCustomers(id));
 
-                if (dataOut.data.Count == 0)
+                if (data.Count == 0)
                 {
                     return new ReturnModel<CustomerDTO>(null, "204", "Customer with id: " + id + " not found", 0, 0, new List<string>() { "Not Found" });
                 }
-                else if (dataOut.data.Count == 1 && dataOut.data[0] == null)
+                else if (data.Count == 1 && data[0] == null)
                 {
                     return new ReturnModel<CustomerDTO>(null, "204", "Customer with id: " + id + " not found", 0, 0, new List<string>() { "Not Found" });
                 }
                 else
                 {
-                    return new ReturnModel<CustomerDTO>(dataOut.data, "200", "Customer with id: " + id, 0, dataOut.data.Count, new List<string>() { "None" });
+                    return new ReturnModel<CustomerDTO>(data, "200", "Customer with id: " + id, 0, data.Count, new List<string>() { "None" });
                 }
             }
             else

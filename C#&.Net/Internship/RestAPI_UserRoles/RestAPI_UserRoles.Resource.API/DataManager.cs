@@ -8,37 +8,6 @@ namespace RestAPI_UserRoles
 {
     public class CustomersDataManager
     {
-        public static DataOut<CustomerDTO> GetId(DataIn<CustomerDTO> data, MySqlConnection connection)
-        {
-            if (data != null & connection != null)
-            {
-                int id = data.id;
-                string sql = "SELECT * FROM customers WHERE id = " + id;
-                MySqlCommand customerCommand = new MySqlCommand(sql, connection);
-
-                DataTable customerTable = new DataTable();
-                MySqlDataAdapter adapter = new MySqlDataAdapter(customerCommand);
-                adapter.Fill(customerTable);
-
-                CustomerDTO result = null;
-                if (customerTable.Rows.Count > 0)
-                {
-                    DataRow row = customerTable.Rows[0];
-                    result = new CustomerDTO(row.Field<int>("id"),
-                        row.Field<string>("name"),
-                        row.Field<string>("email"),
-                        row.Field<string>("role"));
-                }
-
-                return new DataOut<CustomerDTO>(new List<CustomerDTO>() { result }, true);
-            }
-            else
-            {
-                return new DataOut<CustomerDTO>(new List<CustomerDTO>(), false);
-            }
-
-        }
-
         public static DataOut<CustomerDTO> Get(DataIn<CustomerDTO> data, MySqlConnection connection)
         {
             if (data != null & connection != null)
@@ -78,6 +47,7 @@ namespace RestAPI_UserRoles
 
                 int result = command.ExecuteNonQuery();
 
+                Redis.UpdateCustomers();
                 return new DataOut<CustomerDTO>(null, result > 0);
             }
             else
@@ -127,6 +97,7 @@ namespace RestAPI_UserRoles
                 command.ExecuteNonQuery();
                 customer.id = command.LastInsertedId;
 
+                Redis.UpdateCustomers();
                 return new DataOut<CustomerDTO>(new List<CustomerDTO>() { customer }, true);
             }
             else
@@ -172,6 +143,8 @@ namespace RestAPI_UserRoles
                 MySqlCommand command = new MySqlCommand(commandText, connection);
 
                 int result = command.ExecuteNonQuery();
+
+                Redis.UpdateCustomers();
                 return new DataOut<CustomerDTO>(null, result > 0);
             }
             else
@@ -181,7 +154,7 @@ namespace RestAPI_UserRoles
         }
     }
 
-    public class ProductDataManager
+    public class ProductsDataManager
     {
         public static DataOut<ProductDTO> Get(DataIn<ProductDTO> data, MySqlConnection connection)
         {
@@ -255,6 +228,7 @@ namespace RestAPI_UserRoles
                 command.ExecuteNonQuery();
                 customer.id = command.LastInsertedId;
 
+                Redis.UpdateProducts();
                 return new DataOut<ProductDTO>(new List<ProductDTO>() { customer }, true);
             }
             else
@@ -291,42 +265,14 @@ namespace RestAPI_UserRoles
                 MySqlCommand command = new MySqlCommand(commandText, connection);
 
                 int result = command.ExecuteNonQuery();
+
+                Redis.UpdateProducts();
                 return new DataOut<ProductDTO>(null, result > 0);
             }
             else
             {
                 return new DataOut<ProductDTO>(new List<ProductDTO>(), false);
             }
-        }
-
-        public static DataOut<ProductDTO> GetId(DataIn<ProductDTO> data, MySqlConnection connection)
-        {
-            if (data != null & connection != null)
-            {
-                int id = data.id;
-                string sql = "SELECT * FROM products WHERE id = " + id;
-                MySqlCommand customerCommand = new MySqlCommand(sql, connection);
-
-                DataTable customerTable = new DataTable();
-                MySqlDataAdapter adapter = new MySqlDataAdapter(customerCommand);
-                adapter.Fill(customerTable);
-
-                ProductDTO result = null;
-                if (customerTable.Rows.Count > 0)
-                {
-                    DataRow row = customerTable.Rows[0];
-                    result = new ProductDTO(row.Field<int>("id"),
-                        row.Field<int>("amount"),
-                        row.Field<string>("productName"));
-                }
-
-                return new DataOut<ProductDTO>(new List<ProductDTO>() { result }, true);
-            }
-            else
-            {
-                return new DataOut<ProductDTO>(new List<ProductDTO>(), false);
-            }
-
         }
 
         public static DataOut<ProductDTO> Delete(DataIn<ProductDTO> data, MySqlConnection connection)
@@ -340,6 +286,7 @@ namespace RestAPI_UserRoles
 
                 int result = command.ExecuteNonQuery();
 
+                Redis.UpdateProducts();
                 return new DataOut<ProductDTO>(null, result > 0);
             }
             else
@@ -349,7 +296,7 @@ namespace RestAPI_UserRoles
         }
     }
 
-    public class OrderDataManager
+    public class OrdersDataManager
     {
         public static DataOut<OrderDTO> Get(DataIn<OrderDTO> data, MySqlConnection connection)
         {
@@ -427,6 +374,7 @@ namespace RestAPI_UserRoles
                     command.ExecuteNonQuery();
                     order.id = command.LastInsertedId;
 
+                    Redis.UpdateOrders();
                     return new DataOut<OrderDTO>(new List<OrderDTO>() { order }, true);
                 }
                 else
@@ -438,38 +386,6 @@ namespace RestAPI_UserRoles
             {
                 return new DataOut<OrderDTO>(new List<OrderDTO>(), false);
             }
-        }
-
-        public static DataOut<OrderDTO> GetId(DataIn<OrderDTO> data, MySqlConnection connection)
-        {
-            if (data != null & connection != null)
-            {
-                int id = data.id;
-                string sql = "SELECT * FROM orders WHERE id = " + id;
-                MySqlCommand customerCommand = new MySqlCommand(sql, connection);
-
-                DataTable customerTable = new DataTable();
-                MySqlDataAdapter adapter = new MySqlDataAdapter(customerCommand);
-                adapter.Fill(customerTable);
-
-                OrderDTO result = null;
-                if (customerTable.Rows.Count > 0)
-                {
-                    DataRow row = customerTable.Rows[0];
-                    result = new OrderDTO(row.Field<int>("id"),
-                        row.Field<int>("amount"),
-                        row.Field<int>("user_id"),
-                        row.Field<int>("product_id"),
-                        row.Field<string>("time"));
-                }
-
-                return new DataOut<OrderDTO>(new List<OrderDTO>() { result }, true);
-            }
-            else
-            {
-                return new DataOut<OrderDTO>(new List<OrderDTO>(), false);
-            }
-
         }
 
         public static DataOut<OrderDTO> Delete(DataIn<OrderDTO> data, MySqlConnection connection)
@@ -499,6 +415,7 @@ namespace RestAPI_UserRoles
 
                     int result = command.ExecuteNonQuery();
 
+                    Redis.UpdateOrders();
                     return new DataOut<OrderDTO>(null, result > 0);
                 }
             }

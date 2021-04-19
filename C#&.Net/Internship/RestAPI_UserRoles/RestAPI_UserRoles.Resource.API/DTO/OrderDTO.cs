@@ -68,5 +68,10 @@ namespace RestAPI_UserRoles.DTO
 
             return valueList;
         }
+
+        public override string ToString()
+        {
+            return "{id: " + id + "; amount: " + amount + "; user_id: " + user_id + "; product_id: " + product_id + "; time: " + time + ";}";
+        }
     }
 }

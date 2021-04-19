@@ -16,13 +16,17 @@ namespace RestAPI_UserRoles.DTO
             this.productName = productName;
             this.amount = amount;
         }
-
         public ProductDTO(List<string> createList)
         {
             id = -1;
             amount = Convert.ToInt32(createList[0]);
             productName = createList[1];
         }
+        public ProductDTO()
+        {
+
+        }
+
 
         public static List<string> GetFieldList()
         {
@@ -35,7 +39,6 @@ namespace RestAPI_UserRoles.DTO
             }
             return result;
         }
-
         public List<string> GetValueList()
         {
             Type type = typeof(ProductDTO);
@@ -56,6 +59,11 @@ namespace RestAPI_UserRoles.DTO
             }
 
             return valueList;
+        }
+
+        public override string ToString()
+        {
+            return "{id: " + id + "; amount: " + amount + "; productName: " + productName + ";}";
         }
     }
 }

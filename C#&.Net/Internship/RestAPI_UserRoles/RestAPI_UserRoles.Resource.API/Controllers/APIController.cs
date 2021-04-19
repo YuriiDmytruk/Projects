@@ -13,8 +13,15 @@ namespace RestAPI_UserRoles.Controllers
         public DTO.APIDTO Get()
         {
             DTO.APIDTO result = new DTO.APIDTO();
+            Redis.UpdateCustomers();
+            Redis.UpdateProducts();
+            Redis.UpdateOrders();
 
-            result.message.Add("Started; ");
+            result.message.Add("Started");
+            result.message.Add("mySQL DB Connected");
+            result.message.Add("Customers are cached");
+            result.message.Add("Products are cached");
+            result.message.Add("Orders are cached");
 
             return result;
         }

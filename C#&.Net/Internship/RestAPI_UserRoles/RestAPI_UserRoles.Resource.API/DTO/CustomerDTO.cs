@@ -11,6 +11,10 @@ namespace RestAPI_UserRoles.DTO
         public string email { get; set; }
         public string role { get; set; }
 
+        public CustomerDTO()
+        {
+
+        }
         public CustomerDTO(int id, string name, string email, string role)
         {
             this.id = id;
@@ -18,7 +22,6 @@ namespace RestAPI_UserRoles.DTO
             this.email = email;
             this.role = role;
         }
-
         public CustomerDTO(List<string> createList)
         {
             id = -1;
@@ -26,7 +29,6 @@ namespace RestAPI_UserRoles.DTO
             email = createList[1];
             role = createList[2];
         }
-
         public static List<string> GetFieldList()
         {
             Type type = typeof(CustomerDTO);
@@ -38,7 +40,6 @@ namespace RestAPI_UserRoles.DTO
             }
             return result;
         }
-
         public List<string> GetValueList()
         {
             Type type = typeof(CustomerDTO);
@@ -59,6 +60,10 @@ namespace RestAPI_UserRoles.DTO
             }
 
             return valueList;
+        }
+        public override string ToString()
+        {
+            return "{id: " + id + "; name: " + name + "; email: " + email + "; role: " + role + ";}";
         }
     }
 }

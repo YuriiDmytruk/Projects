@@ -8,6 +8,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
+using RestAPI_UserRoles.Auth.API;
 
 namespace RestAPI_UserRoles.Controllers
 {
@@ -25,6 +26,7 @@ namespace RestAPI_UserRoles.Controllers
         [HttpGet]
         public ReturnModel<string> Get()
         {
+            Redis.Update();
             return new ReturnModel<string>(null, "200", "Authorization server started", 0, 0, null);
         }
 
@@ -46,7 +48,7 @@ namespace RestAPI_UserRoles.Controllers
         }
         private Account AuthenticateUser(string email, string password)
         {
-            List<Account> accounts = DataManager.Get();
+            List<Account> accounts = Redis.Get();
 
             for (int i = 0; i < accounts.Count; i++)
             {

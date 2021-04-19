@@ -20,22 +20,20 @@ namespace RestAPI_UserRoles.Resource.API.Controllers
         [HttpGet]
         public ReturnModel<ProductDTO> Get([FromQuery] string sort_by, [FromQuery] string sort_type, [FromQuery] string find, [FromQuery] int page_size, [FromQuery] int page)
         {
-
-            DataIn<ProductDTO> dataIn = new DataIn<ProductDTO>(null, 0, "");
-            DataOut<ProductDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<ProductDTO>, MySqlConnection, DataOut<ProductDTO>>(ProductDataManager.Get), dataIn);
+            List<ProductDTO> data = Redis.GetProducts();
 
             List<string> errorList = new List<string>();
 
-            dataOut.data = DataUtil.Sort(dataOut.data, sort_by, sort_type);
+            data = DataUtil.Sort(data, sort_by, sort_type);
 
             if (page_size == 0)
             {
-                page_size = dataOut.data.Count;
+                page_size = data.Count;
             }
-            dataOut.data = DataUtil.CreatePage(dataOut.data, page, page_size);
+            data = DataUtil.CreatePage(data, page, page_size);
 
-            dataOut.data = DataUtil.Search(dataOut.data, find);
-            if (dataOut.data.Count == 0)
+            data = DataUtil.Search(data, find);
+            if (data.Count == 0)
             {
                 errorList.Add("Nothing was found during the search");
             }
@@ -44,34 +42,33 @@ namespace RestAPI_UserRoles.Resource.API.Controllers
             {
                 errorList.Add("None");
             }
-            if (dataOut.data.Count == 0)
+            if (data.Count == 0)
             {
-                return new ReturnModel<ProductDTO>(dataOut.data, "204", "Nothing found", dataOut.data.Count, page, errorList);
+                return new ReturnModel<ProductDTO>(data, "204", "Nothing found", data.Count, page, errorList);
             }
             else
             {
-                return new ReturnModel<ProductDTO>(dataOut.data, "200", "All Products", dataOut.data.Count, page, errorList);
+                return new ReturnModel<ProductDTO>(data, "200", "All Products", data.Count, page, errorList);
             }
         }
 
         [HttpGet("{id}")]
         public ReturnModel<ProductDTO> GetId(int id)
         {
+            List<ProductDTO> data = new List<ProductDTO>();
+            data.Add(Redis.GetIdProducts(id));
 
-            DataIn<ProductDTO> dataIn = new DataIn<ProductDTO>(null, id);
-            DataOut<ProductDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<ProductDTO>, MySqlConnection, DataOut<ProductDTO>>(ProductDataManager.GetId), dataIn);
-
-            if (dataOut.data.Count == 0)
+            if (data.Count == 0)
             {
                 return new ReturnModel<ProductDTO>(null, "204", "Product with id: " + id + " not found", 0, 0, new List<string>() { "Not Found" });
             }
-            else if (dataOut.data.Count == 1 && dataOut.data[0] == null)
+            else if (data.Count == 1 && data[0] == null)
             {
                 return new ReturnModel<ProductDTO>(null, "204", "Product with id: " + id + " not found", 0, 0, new List<string>() { "Not Found" });
             }
             else
             {
-                return new ReturnModel<ProductDTO>(dataOut.data, "200", "Product with id: " + id, 0, dataOut.data.Count, new List<string>() { "None" });
+                return new ReturnModel<ProductDTO>(data, "200", "Product with id: " + id, 0, data.Count, new List<string>() { "None" });
             }
         }
 
@@ -98,7 +95,7 @@ namespace RestAPI_UserRoles.Resource.API.Controllers
                 if (validate.errorList.Count == 0)
                 {
                     DataIn<ProductDTO> dataIn = new DataIn<ProductDTO>(toAdd, 0);
-                    DataOut<ProductDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<ProductDTO>, MySqlConnection, DataOut<ProductDTO>>(ProductDataManager.Post), dataIn);
+                    DataOut<ProductDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<ProductDTO>, MySqlConnection, DataOut<ProductDTO>>(ProductsDataManager.Post), dataIn);
 
                     validate.Add("None");
                     return new ReturnModel<ProductDTO>(dataOut.data, "200", "Successfully added", 0, dataOut.data.Count, validate.errorList);
@@ -143,7 +140,7 @@ namespace RestAPI_UserRoles.Resource.API.Controllers
                 {
 
                     DataIn<ProductDTO> dataIn = new DataIn<ProductDTO>(toAdd, id);
-                    DataOut<ProductDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<ProductDTO>, MySqlConnection, DataOut<ProductDTO>>(ProductDataManager.Put), dataIn);
+                    DataOut<ProductDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<ProductDTO>, MySqlConnection, DataOut<ProductDTO>>(ProductsDataManager.Put), dataIn);
 
                     validate.Add("None");
                     return new ReturnModel<ProductDTO>(null, "200", "This fields will be modified in element whith id: " + id, 0, 0, validate.errorList);
@@ -166,7 +163,7 @@ namespace RestAPI_UserRoles.Resource.API.Controllers
             if (UserRole == "Admin")
             {
                 DataIn<ProductDTO> dataIn = new DataIn<ProductDTO>(null, id);
-                DataOut<ProductDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<ProductDTO>, MySqlConnection, DataOut<ProductDTO>>(ProductDataManager.Delete), dataIn);
+                DataOut<ProductDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<ProductDTO>, MySqlConnection, DataOut<ProductDTO>>(ProductsDataManager.Delete), dataIn);
 
                 if (dataOut.success)
                 {

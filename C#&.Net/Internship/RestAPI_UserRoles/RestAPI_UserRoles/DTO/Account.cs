@@ -21,6 +21,14 @@
                 this.role = new Role[] { Role.Admin };
             }
         }
+
+        public Account(long id, string email, string password, Role[] role)
+        {
+            this.id = id;
+            this.email = email;
+            this.password = password;
+            this.role = role;
+        }
     }
 
     public enum Role

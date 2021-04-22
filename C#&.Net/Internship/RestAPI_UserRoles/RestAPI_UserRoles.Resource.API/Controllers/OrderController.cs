@@ -21,17 +21,26 @@ namespace RestAPI_UserRoles.Resource.API.Controllers
         [HttpGet]
         public ReturnModel<OrderDTO> Get([FromQuery] string sort_by, [FromQuery] string sort_type, [FromQuery] string find, [FromQuery] int page_size, [FromQuery] int page)
         {
-            List<OrderDTO> data = Redis.GetOrders();
+
+            DataIn<OrderDTO> dataIn = new DataIn<OrderDTO>(null, 0);
+            DataOut<OrderDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<OrderDTO>, MySqlConnection, DataOut<OrderDTO>>(OrdersDataManager.Get), dataIn);
+
+            List<OrderDTO> data;
 
             if (UserRole != "Admin")
             {
-                for (int i = 0; i < data.Count; i++)
+                data = new List<OrderDTO>();
+                for (int i = 0; i < dataOut.data.Count; i++)
                 {
-                    if (data[i].user_id != UserId)
+                    if (dataOut.data[i].user_id == UserId)
                     {
-                        data.RemoveAt(i);
+                        data.Add(dataOut.data[i]);
                     }
                 }
+            }
+            else
+            {
+                data = dataOut.data;
             }
 
             List<string> errorList = new List<string>();
@@ -68,8 +77,9 @@ namespace RestAPI_UserRoles.Resource.API.Controllers
         [HttpGet("{id}")]
         public ReturnModel<OrderDTO> GetId(int id)
         {
-            List<OrderDTO> data = new List<OrderDTO>();
-            data.Add(Redis.GetIdOrders(id));
+            DataIn<OrderDTO> dataIn = new DataIn<OrderDTO>(null, 0);
+            DataOut<OrderDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<OrderDTO>, MySqlConnection, DataOut<OrderDTO>>(OrdersDataManager.GetID), dataIn);
+            List<OrderDTO> data = dataOut.data;
 
             if (data.Count == 0)
             {
@@ -159,7 +169,7 @@ namespace RestAPI_UserRoles.Resource.API.Controllers
             {
                 if (dataOut.errorMessage == "forbiden")
                 {
-                    return new ReturnModel<OrderDTO>(null, "404", "Product with id: " + id + " not found", 0, 0, new List<string>() { "You can't delete this order" });
+                    return new ReturnModel<OrderDTO>(null, "404", "Access forbiden ", 0, 0, new List<string>() { "You can't delete this order" });
                 }
                 else
                 {

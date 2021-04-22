@@ -183,6 +183,33 @@ namespace RestAPI_UserRoles
             }
         }
 
+        public static DataOut<ProductDTO> GetID(DataIn<ProductDTO> data, MySqlConnection connection)
+        {
+            if (data != null & connection != null)
+            {
+                string sql = "SELECT * FROM products";
+                MySqlCommand customerCommand = new MySqlCommand(sql, connection);
+
+                DataTable customerTable = new DataTable();
+                MySqlDataAdapter adapter = new MySqlDataAdapter(customerCommand);
+                adapter.Fill(customerTable);
+
+                List<ProductDTO> result = new List<ProductDTO>();
+                DataRow row = customerTable.Rows[0];
+
+                result.Add(new ProductDTO(row.Field<int>("id"),
+                    row.Field<int>("amount"),
+                    row.Field<string>("productName")));
+
+
+                return new DataOut<ProductDTO>(result, true);
+            }
+            else
+            {
+                return new DataOut<ProductDTO>(new List<ProductDTO>(), false);
+            }
+        }
+
         public static DataOut<ProductDTO> Post(DataIn<ProductDTO> data, MySqlConnection connection)
         {
             if (data != null & connection != null)
@@ -228,7 +255,6 @@ namespace RestAPI_UserRoles
                 command.ExecuteNonQuery();
                 customer.id = command.LastInsertedId;
 
-                Redis.UpdateProducts();
                 return new DataOut<ProductDTO>(new List<ProductDTO>() { customer }, true);
             }
             else
@@ -266,7 +292,6 @@ namespace RestAPI_UserRoles
 
                 int result = command.ExecuteNonQuery();
 
-                Redis.UpdateProducts();
                 return new DataOut<ProductDTO>(null, result > 0);
             }
             else
@@ -286,7 +311,6 @@ namespace RestAPI_UserRoles
 
                 int result = command.ExecuteNonQuery();
 
-                Redis.UpdateProducts();
                 return new DataOut<ProductDTO>(null, result > 0);
             }
             else
@@ -318,6 +342,35 @@ namespace RestAPI_UserRoles
                         row.Field<int>("product_id"),
                         row.Field<string>("time")));
                 }
+
+                return new DataOut<OrderDTO>(result, true);
+            }
+            else
+            {
+                return new DataOut<OrderDTO>(new List<OrderDTO>(), false);
+            }
+        }
+
+        public static DataOut<OrderDTO> GetID(DataIn<OrderDTO> data, MySqlConnection connection)
+        {
+            if (data != null & connection != null)
+            {
+                string sql = "SELECT * FROM orders";
+                MySqlCommand customerCommand = new MySqlCommand(sql, connection);
+
+                DataTable customerTable = new DataTable();
+                MySqlDataAdapter adapter = new MySqlDataAdapter(customerCommand);
+                adapter.Fill(customerTable);
+
+                List<OrderDTO> result = new List<OrderDTO>();
+                DataRow row = customerTable.Rows[0];
+
+                result.Add(new OrderDTO(row.Field<int>("id"),
+                    row.Field<int>("amount"),
+                    row.Field<int>("user_id"),
+                    row.Field<int>("product_id"),
+                    row.Field<string>("time")));
+
 
                 return new DataOut<OrderDTO>(result, true);
             }
@@ -374,7 +427,6 @@ namespace RestAPI_UserRoles
                     command.ExecuteNonQuery();
                     order.id = command.LastInsertedId;
 
-                    Redis.UpdateOrders();
                     return new DataOut<OrderDTO>(new List<OrderDTO>() { order }, true);
                 }
                 else
@@ -415,7 +467,6 @@ namespace RestAPI_UserRoles
 
                     int result = command.ExecuteNonQuery();
 
-                    Redis.UpdateOrders();
                     return new DataOut<OrderDTO>(null, result > 0);
                 }
             }
@@ -476,13 +527,47 @@ namespace RestAPI_UserRoles
             {
                 string commandText = "UPDATE products SET amount=" + newAmount + " WHERE id =" + product_id;
                 MySqlCommand command = new MySqlCommand(commandText, connection);
-                
+
                 command.ExecuteNonQuery();
                 return true;
             }
             else
             {
                 return false;
+            }
+        }
+    }
+
+    public class HistoryDataManager
+    {
+        public static DataOut<HistoryDTO> Get(DataIn<HistoryDTO> data, MySqlConnection connection)
+        {
+            if (data != null & connection != null)
+            {
+                string sql = "SELECT * FROM orders";
+                MySqlCommand customerCommand = new MySqlCommand(sql, connection);
+
+                DataTable customerTable = new DataTable();
+                MySqlDataAdapter adapter = new MySqlDataAdapter(customerCommand);
+                adapter.Fill(customerTable);
+
+                List<HistoryDTO> result = new List<HistoryDTO>();
+                foreach (DataRow row in customerTable.Rows)
+                {
+                    result.Add(new HistoryDTO(row.Field<int>("id"),
+                        row.Field<string>("from"),
+                        row.Field<string>("to"),
+                        row.Field<string>("action"),
+                        row.Field<int>("user_id"),
+                        row.Field<string>("changed_table"),
+                        row.Field<string>("changed_")));
+                }
+
+                return new DataOut<HistoryDTO>(result, true);
+            }
+            else
+            {
+                return new DataOut<HistoryDTO>(new List<HistoryDTO>(), false);
             }
         }
     }

@@ -62,11 +62,11 @@ namespace RestAPI_UserRoles.Controllers
 
         }
 
-        // Only Admin or Loged in user
+        // Only Admin
         [HttpGet("{id}")]
         public ReturnModel<CustomerDTO> GetId(int id)
         {
-            if (UserId == id || UserRole == "Admin")
+            if (UserRole == "Admin")
             {
                 List<CustomerDTO> data = new List<CustomerDTO>();
                 data.Add(Redis.GetIdCustomers(id));
@@ -91,13 +91,13 @@ namespace RestAPI_UserRoles.Controllers
 
         }
 
-        //Only Admin can create new Admin
+        //Only Admin
         [HttpPost]
         public ReturnModel<CustomerDTO> Post(JsonElement jsonData)
         {
-            if (jsonData.GetProperty("role").GetString() == "Admin" && UserRole != "Admin")
+            if (UserRole != "Admin")
             {
-                return new ReturnModel<CustomerDTO>(null, "401", "Forbiden", 0, 0, new List<string>() { "Only Admin can create new admin" });
+                return new ReturnModel<CustomerDTO>(null, "401", "Forbiden", 0, 0, new List<string>() { "Only Admin can create new customer" });
             }
             else
             {
@@ -130,11 +130,11 @@ namespace RestAPI_UserRoles.Controllers
             }
         }
 
-        // Only Admin or Loged in user + Only admin can cheange User to Admin
+        // Only Admin
         [HttpPut("{id}")]
         public ReturnModel<CustomerDTO> Put(int id, JsonElement jsonData)
         {
-            if (UserId == id || UserRole == "Admin")
+            if (UserRole == "Admin")
             {
                 JsonElement copy = jsonData;
                 if (copy.TryGetProperty("role", out copy))
@@ -188,11 +188,11 @@ namespace RestAPI_UserRoles.Controllers
             }
         }
 
-        // Only Admin or Loged in user
+        // Only Admin
         [HttpDelete("{id}")]
         public ReturnModel<CustomerDTO> Delete(int id)
         {
-            if (UserId == id || UserRole == "Admin")
+            if (UserRole == "Admin")
             {
                 DataIn<CustomerDTO> dataIn = new DataIn<CustomerDTO>(null, id);
                 DataOut<CustomerDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<CustomerDTO>, MySqlConnection, DataOut<CustomerDTO>>(CustomersDataManager.Delete), dataIn);

@@ -20,7 +20,10 @@ namespace RestAPI_UserRoles.Resource.API.Controllers
         [HttpGet]
         public ReturnModel<ProductDTO> Get([FromQuery] string sort_by, [FromQuery] string sort_type, [FromQuery] string find, [FromQuery] int page_size, [FromQuery] int page)
         {
-            List<ProductDTO> data = Redis.GetProducts();
+            DataIn<ProductDTO> dataIn = new DataIn<ProductDTO>(null, 0);
+            DataOut<ProductDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<ProductDTO>, MySqlConnection, DataOut<ProductDTO>>(ProductsDataManager.Get), dataIn);
+
+            List<ProductDTO> data = dataOut.data;
 
             List<string> errorList = new List<string>();
 
@@ -55,8 +58,9 @@ namespace RestAPI_UserRoles.Resource.API.Controllers
         [HttpGet("{id}")]
         public ReturnModel<ProductDTO> GetId(int id)
         {
-            List<ProductDTO> data = new List<ProductDTO>();
-            data.Add(Redis.GetIdProducts(id));
+            DataIn<ProductDTO> dataIn = new DataIn<ProductDTO>(null, 0);
+            DataOut<ProductDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<ProductDTO>, MySqlConnection, DataOut<ProductDTO>>(ProductsDataManager.GetID), dataIn);
+            List<ProductDTO> data = dataOut.data;
 
             if (data.Count == 0)
             {

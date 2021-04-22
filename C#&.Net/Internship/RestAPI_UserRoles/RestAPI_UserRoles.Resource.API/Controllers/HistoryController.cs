@@ -14,51 +14,27 @@ namespace RestAPI_UserRoles.Resource.API.Controllers
     {
         private string UserRole => User.Claims.Single(c => c.Type == ClaimTypes.Role).Value;
 
-        //// Only Admin
-        //[HttpGet]
-        //public ReturnModel<DateToSaveDTO> Get()
-        //{
-        //    if (UserRole == "Admin")
-        //    {
-        //        List<DateToSaveDTO> result = Redis.Get();
-        //        if (result.Count == 0)
-        //        {
-        //            return new ReturnModel<DateToSaveDTO>(result, "204", "Nothing found", result.Count, 0, new List<string>());
-        //        }
-        //        else
-        //        {
-        //            return new ReturnModel<DateToSaveDTO>(result, "200", "History", result.Count, 0, new List<string>());
-        //        }
-        //    }
-        //    else
-        //    {
-        //        return new ReturnModel<DateToSaveDTO>(null, "401", "Access is forbiden", 0, 0, new List<string>() { "Only Admin has access to this date" });
-        //    }
-        //}
-
-        //// Only Admin
-        //[HttpGet("{id}")]
-        //public ReturnModel<DateToSaveDTO> GetId(int id)
-        //{
-        //    if (UserRole == "Admin")
-        //    {
-
-        //        List<DateToSaveDTO> result = new List<DateToSaveDTO>();
-        //        result.Add(Redis.GetId(id));
-        //        if (result.Count == 0)
-        //        {
-        //            return new ReturnModel<DateToSaveDTO>(result, "204", "Nothing found", result.Count, 0, new List<string>());
-        //        }
-        //        else
-        //        {
-        //            return new ReturnModel<DateToSaveDTO>(result, "200", "History", result.Count, 0, new List<string>());
-        //        }
-        //    }
-        //    else
-        //    {
-        //        return new ReturnModel<DateToSaveDTO>(null, "401", "Access is forbiden", 0, 0, new List<string>() { "Only Admin has access to this date" });
-        //    }
-
-        //}
+        // Only Admin
+        [HttpGet]
+        public ReturnModel<HistoryDTO> Get()
+        {
+            if (UserRole == "Admin")
+            { 
+                DataIn<HistoryDTO> dataIn = new DataIn<HistoryDTO>(null, 0);
+                DataOut<HistoryDTO> dataOut = MySQLConnect.Connect(new System.Func<DataIn<HistoryDTO>, MySqlConnection, DataOut<HistoryDTO>>(HistoryDataManager.Get), dataIn);
+                if (dataOut.data.Count == 0)
+                {
+                    return new ReturnModel<HistoryDTO>(dataOut.data, "204", "Nothing found", dataOut.data.Count, 0, new List<string>());
+                }
+                else
+                {
+                    return new ReturnModel<HistoryDTO>(dataOut.data, "200", "History", dataOut.data.Count, 0, new List<string>());
+                }
+            }
+            else
+            {
+                return new ReturnModel<HistoryDTO>(null, "401", "Access is forbiden", 0, 0, new List<string>() { "Only Admin has access to this date" });
+            }
+        }
     }
 }

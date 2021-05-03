@@ -12,51 +12,78 @@ class Department:
         self.yearly_budget = yearly_budget
         self.website_url = website_url
 
-    def print_elem(self):
+    def __str__(self):
         check = 0
+        word = ""
         while check < Department.number_of_fields(self):
-            print(Department.get_value(self, check), end='; ')
+            word += Department.get_value(self, check)
+            word += ", "
             check += 1
+        return word
 
     def get_value(self, key):
-        number = 0
-        for attribute, value in self.__dict__.items():
-            if number == key:
-                return value
-            else:
-                number += 1
+        if self is None or key is None:
+            return None
+        else:
+            number = 0
+            for attribute, value in self.__dict__.items():
+                if number == key:
+                    #return value
 
-    def add_value(self, value, key):
-        if value == "":
-            value = "None"
-        number = 0
-        for attribute in self.__dict__.items():
-            if number == key:
-                name = str(attribute)
-                name = Department.get_name(self, name)
-                self.__dict__[name] = value
-                break
-            else:
-                number += 1
+                    if value is None:
+                        return "None"
+                    else:
+                        return value
+
+                else:
+                    number += 1
+
+    def set_value(self, value, key):
+        if self is None or key is None:
+            return None
+        else:
+            if value == "":
+                value = "None"
+            number = 0
+            for attribute in self.__dict__.items():
+                if number == Department.number_of_fields(self) - 1:
+                    return None
+                else:
+                    if number == key:
+                        name = str(attribute)
+                        name = Department.get_name(self, name)
+                        self.__dict__[name] = value
+                        return self
+                    else:
+                        number += 1
 
     def create_new_elem(self, arr_add):
-        check = 0
-        while check < len(arr_add):
-            element = Validator.Validate(arr_add[check])
-            add_value = Validator.Validate.check_invalid_symbols(element)
-            arr_add[check] = add_value
-            check += 1
-        check = 0
-        while check < Department.number_of_fields(self):
-            Department.add_value(self, arr_add[check], check)
-            check += 1
-        return self
+        if self is None or arr_add is None:
+            return None
+        else:
+            while len(arr_add) != Department.number_of_fields(self):
+                if len(arr_add) < Department.number_of_fields(self):
+                    arr_add.append(None)
+                else:
+                    arr_add.pop(-1)
+            check = 0
+            while check < Department.number_of_fields(self):
+                if arr_add[check] is None:
+                    arr_add[check] = "None"
+                Department.set_value(self, arr_add[check], check)
+                check += 1
+            x = Validator.Validate(self)
+            y = Validator.Validate.main_validation(x)
+            return y
 
     def number_of_fields(self):
-        fields = 0
-        for attribute, value in self.__dict__.items():
-            fields += 1
-        return fields
+        if self is None:
+            return None
+        else:
+            fields = 0
+            for attribute, value in self.__dict__.items():
+                fields += 1
+            return fields
 
     def get_name(self, name):
         ret_name = ""
@@ -74,6 +101,35 @@ class Department:
             else:
                 check += 1
         return ret_name
+
+    def set_value_by_name(self, value, key):
+        if key is None or self is None:
+            return None
+        else:
+            if value == "":
+                value = "None"
+            number = 0
+            for attribute in self.__dict__.items():
+                name = str(attribute)
+                name = Department.get_name(self, name)
+                if name == key:
+                    self.__dict__[key] = value
+                    return self
+                else:
+                    number += 1
+        return None
+
+    def get_value_by_name(self, key):
+        if key is None or self is None:
+            return None
+        else:
+            for attribute, value in self.__dict__.items():
+                if attribute == key:
+                    if value is None:
+                        return "None"
+                    else:
+                        return value
+        return None
 
 
 
